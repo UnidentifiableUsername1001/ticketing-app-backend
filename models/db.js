@@ -1,5 +1,6 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
+require("node:dns/promises").setServers(["1.1.1.1", "8.8.8.8"]);
 
 let url = `${process.env.MONGO_URL}`;
 

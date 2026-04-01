@@ -4,7 +4,7 @@ const cors = require('cors');
 const portfinder = require("portfinder");
 const connectToDataBase = require('./models/db')
 const app = express();
-app.use("*", cors());
+app.use(cors());
 portfinder.basePort = process.env.PORT || 3000;
 
 // connect to MongoDB
