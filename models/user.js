@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose')
 const { Schema, SchemaTypes, model } = mongoose;
 
 const validPermissions = ["Admin", "mgtUser", "stdUser"];
 
-const userSchema= new Schema ({
+const userSchema = new Schema ({
     jobTitle: {
         type: String,
         required: true
@@ -33,5 +33,7 @@ const userSchema= new Schema ({
     timestamps: true
 });
 
-const User = model('User', userSchema);
-export default User;
+
+const user = mongoose.model('User', userSchema);
+
+module.exports = user;

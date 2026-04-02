@@ -9,7 +9,7 @@ portfinder.basePort = process.env.PORT || 3000;
 
 // connect to MongoDB
 connectToDataBase().then(() => {
-    console.log('Connect to DB');
+    console.log('Connected to DB');
 }).catch((e) => console.error('Failed to connect to DB', e));
 
 app.use(express.json());
