@@ -11,13 +11,20 @@ const logger = pino();
 const mongoose = require('mongoose');
 const user = require('../models/user');
 
+const checkEmail = body('email').isEmail().escape();
+const checkPassword = body('password')
+    .isLength({min: 6, max: 20})
+    .isStrongPassword({ minLength: 6, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1, returnScore: false});
+
+const profileValidationRules = [checkEmail, checkPassword];
+
 // Registration  
-router.post('/register', body('email').isEmail().escape(), async (req, res) => {
+router.post('/register', profileValidationRules, async (req, res) => {
     
     const result = validationResult(req);
     if (!result.isEmpty()) {
         logger.error('Validation errors in request', result.array());
-        return res.status(412).json({error: result.array()});
+        return res.status(400).json({error: result.array()});
     } try {
         const email = req.body.email;
         const existingEmail = await user.findOne({email: email});
@@ -53,5 +60,43 @@ router.post('/register', body('email').isEmail().escape(), async (req, res) => {
     } catch (e) {
         return res.status(500).send('Internal server error');
     }
+});
+
+// Login route 
+router.post('/login', profileValidationRules, async (req, res) => {
+
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            logger.error('Validation errors in request', result.array());
+                return res.status(400).json({error: result.array()});
+    } try {
+        const email = req.body.email;
+        const theUser = await user.findOne({email: email});
+        
+        if (theUser) {
+        const passwordResult = await bcrypt.compare(req.body.password, theUser.password);
+
+        if (!passwordResult) {
+            logger.error('Passwords do not match');
+            return res.status(404).json({ error: 'Incorrect details, please try again.' });
+        }
+
+        let payload = {
+            user: {
+                id: theUser._id.toString(),
+            },
+        };
+
+        const authToken = jwt.sign(payload, JWT_SECRET);
+        logger.info('User logged in successfully');
+        res.status(200).json(authToken);
+        } else {
+            logger.error('No matching email DB');
+            res.status(404).json({message: 'Incorrect details, please try again.'});
+        }
+    } catch (e) {
+        logger.error(e);
+        res.status(500).json({message: 'Internal server error', details: e.message});
+    };
 });
 
