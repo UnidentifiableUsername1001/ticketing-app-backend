@@ -89,7 +89,7 @@ router.post('/login', profileValidationRules, async (req, res) => {
 
         const authToken = jwt.sign(payload, JWT_SECRET);
         logger.info('User logged in successfully');
-        res.status(200).json(authToken);
+        res.status(200).json({authToken: authToken, message: "User logged in!"});
         } else {
             logger.error('No matching email DB');
             res.status(404).json({message: 'Incorrect details, please try again.'});
@@ -100,3 +100,4 @@ router.post('/login', profileValidationRules, async (req, res) => {
     };
 });
 
+module.exports = router;
