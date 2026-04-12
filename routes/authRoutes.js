@@ -10,6 +10,7 @@ const pino = require('pino');
 const logger = pino();
 const mongoose = require('mongoose');
 const user = require('../models/user');
+const jwtValidation = require('../middleware/auth');
 
 const checkEmail = body('email').isEmail().escape();
 const checkPassword = body('password')
@@ -99,5 +100,10 @@ router.post('/login', profileValidationRules, async (req, res) => {
         res.status(500).json({message: 'Internal server error', details: e.message});
     };
 });
+
+router.get('/dashboard-test', jwtValidation, (req, res) => {
+    const id = req.user;
+    res.status(200).json({message: 'Welcome to the VIP club!', user: id});
+})
 
 module.exports = router;
