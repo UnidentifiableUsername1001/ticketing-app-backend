@@ -57,7 +57,7 @@ router.post('/register', profileValidationRules, async (req, res) => {
 
         const authtoken = jwt.sign(payload, JWT_SECRET);
         logger.info('User registered successfully');
-        res.status(201).json({authtoken, email});
+        res.status(201).json({authToken: authToken, firstName: theUser.firstName, email: email, message: "User registered"});
     } catch (e) {
         return res.status(500).send('Internal server error');
     }
@@ -90,7 +90,7 @@ router.post('/login', profileValidationRules, async (req, res) => {
 
         const authToken = jwt.sign(payload, JWT_SECRET);
         logger.info('User logged in successfully');
-        res.status(200).json({authToken: authToken, message: "User logged in!"});
+        res.status(200).json({authToken: authToken, firstName: theUser.firstName, email: email, message: "User logged in!"});
         } else {
             logger.error('No matching email DB');
             res.status(404).json({message: 'Incorrect details, please try again.'});
