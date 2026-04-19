@@ -6,7 +6,7 @@ const validPermissions = ["Admin", "mgtUser", "stdUser"];
 const userSchema = new Schema ({
     jobTitle: {
         type: String,
-        required: true
+        required: false
     },
     firstName: {
         type: String,
@@ -26,7 +26,7 @@ const userSchema = new Schema ({
     },
     permissionLevel: [{
         type: String,
-        required: true,
+        required: false,
         enum: validPermissions,
     }],
 }, {

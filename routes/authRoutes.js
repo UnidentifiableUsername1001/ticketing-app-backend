@@ -59,6 +59,7 @@ router.post('/register', profileValidationRules, async (req, res) => {
         logger.info('User registered successfully');
         res.status(201).json({authToken: authToken, firstName: theUser.firstName, email: email, message: "User registered"});
     } catch (e) {
+        logger.error(e);
         return res.status(500).send('Internal server error');
     }
 });
