@@ -1,6 +1,6 @@
 ---
-name: Custom issue template
-about: Describe this issue template's purpose here.
+name: Epic
+about: For outlining large design ideas.
 title: ''
 labels: ''
 assignees: UnidentifiableUsername1001
