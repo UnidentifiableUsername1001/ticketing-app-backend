@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
 const { Schema, SchemaTypes, model } = mongoose;
 
 const validStatus = ["Open", "In progress", "Closed"];
@@ -17,19 +17,19 @@ const ticketSchema = new Schema({
         required: true,
         enum: validStatus
     },
-    createdby: {
+    createdBy: {
         type: SchemaTypes.ObjectId,
-        ref: 'User',
+        ref: 'user',
         required: true,
     },
     assignedTo: {
         type: SchemaTypes.ObjectId,
-        ref: 'User',
+        ref: 'user',
         required: true,
     }
 }, {
     timestamps: true
 });
 
-const Ticket = model('Ticket', ticketSchema);
-export default Ticket
+const ticket = mongoose.model('Ticket', ticketSchema);
+module.exports = ticket;
