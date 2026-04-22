@@ -18,12 +18,12 @@ const ticketSchema = new Schema({
         enum: validStatus
     },
     createdBy: {
-        type: SchemaTypes.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'user',
         required: true,
     },
     assignedTo: {
-        type: SchemaTypes.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'user',
         required: true,
     }

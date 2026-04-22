@@ -4,6 +4,8 @@ const { Schema, SchemaTypes, model } = mongoose;
 const validPermissions = ["Admin", "mgtUser", "stdUser"];
 
 const userSchema = new Schema ({
+    _id: Schema.Types.ObjectId,
+    
     jobTitle: {
         type: String,
         required: false
