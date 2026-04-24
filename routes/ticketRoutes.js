@@ -20,9 +20,9 @@ router.post('/create', jwtValidation, async (req, res) => {
         });
 
         await newTicket.save();
-        return res.status(200).json({message: `Ticket #${newTicket._id} created!`})
+        return res.status(201).json({message: `Ticket #${newTicket._id} created!`})
     } catch (e) {
-        console.log(e);
+        console.error('Error processing: ', e);
         return res.status(500).json("Internal server error");
     };
 });
@@ -36,7 +36,35 @@ router.get('/', jwtValidation, async (req, res) => {
         if (ticketArray.length == 0) return res.status(400).json({message: "No tickets available!"});
             return res.status(200).json({message: "Tickets loaded", ticketArray: ticketArray});  
     } catch (e) {
-        console.log(e);
+        console.error('Error processing: ', e);
         return res.status(500).send("Internal server error");
     };
+});
+
+router.get('/:id', jwtValidation, async (req, res) => {
+    try {
+        const id = req.params.id;
+        const foundTicket = await ticket.findById(id)
+            .populate({path: 'createdBy', select: '-jobTitle -password'})
+            .populate({path: 'assignedTo', select: '-jobTitle -password'})
+            .exec();
+        if (!foundTicket) return res.status(404).send('Ticket not found');
+            return res.status(200).json(foundTicket);
+    } catch (e) {
+        console.error('Error fetching: ', e);
+        res.status(500).send('Internal server error');
+    }
+});
+
+router.put('/:id', jwtValidation, async (req, res) => {
+    try {
+        const id = req.params.id;
+        const updatedTicket = await ticket.findByIdAndUpdate(id, { $set: req.body }, {new: true});
+
+        if (!updatedTicket) return res.status(404).send('Ticket not found');
+        return res.status(200).json({ticket: updatedTicket, message: `Ticket #${updatedTicket._id} updated!`});      
+    } catch (e) {
+        console.error('Error processing: ', e);
+        res.status(500).send('Internal server error');
+    }
 });
