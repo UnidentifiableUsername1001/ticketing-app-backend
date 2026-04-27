@@ -1,6 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const {body, validationResuly} = requiree('express-validator');
+const {body, validationResult} = requiree('express-validator');
 const router = express.Router();
 const dotenv = require('dotenv'); dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -33,7 +33,6 @@ router.get('/', jwtValidation, async (req, res) => {
             .populate({path: 'createdBy', select: '-jobTitle -password'})
             .populate({path: 'assignedTo', select: '-jobTitle -password'})
             .exec();
-        if (ticketArray.length == 0) return res.status(400).json({message: "No tickets available!"});
             return res.status(200).json({message: "Tickets loaded", ticketArray: ticketArray});  
     } catch (e) {
         console.error('Error processing: ', e);
@@ -68,3 +67,5 @@ router.put('/:id', jwtValidation, async (req, res) => {
         res.status(500).send('Internal server error');
     }
 });
+
+module.exports = router;

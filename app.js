@@ -5,6 +5,8 @@ const portfinder = require("portfinder");
 const connectToDataBase = require('./models/db')
 const app = express();
 const authRoutes = require('./routes/authRoutes');
+const ticketRoutes = require('./routes/ticketRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 app.use(cors());
 portfinder.basePort = process.env.PORT || 3000;
@@ -18,6 +20,10 @@ app.use(express.json());
 
 // Route files
 app.use('/api/auth', authRoutes);
+
+app.use('/api/ticket', ticketRoutes);
+
+app.use('/api/users', userRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
