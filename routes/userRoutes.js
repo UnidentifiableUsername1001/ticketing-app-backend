@@ -1,6 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const {body, validationResult} = requiree('express-validator');
+const {body, validationResult} = require('express-validator');
 const router = express.Router();
 const dotenv = require('dotenv'); dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;

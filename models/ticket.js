@@ -19,12 +19,12 @@ const ticketSchema = new Schema({
     },
     createdBy: {
         type: Schema.Types.ObjectId,
-        ref: 'user',
+        ref: 'User',
         required: true,
     },
     assignedTo: {
         type: Schema.Types.ObjectId,
-        ref: 'user',
+        ref: 'User',
         required: true,
     }
 }, {

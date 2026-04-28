@@ -1,6 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const {body, validationResult} = requiree('express-validator');
+const {body, validationResult} = require('express-validator');
 const router = express.Router();
 const dotenv = require('dotenv'); dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -23,7 +23,7 @@ router.post('/create', jwtValidation, async (req, res) => {
         return res.status(201).json({message: `Ticket #${newTicket._id} created!`})
     } catch (e) {
         console.error('Error processing: ', e);
-        return res.status(500).json("Internal server error");
+        return res.status(500).json({error: e, message: "Internal server error"});
     };
 });
 
