@@ -26,7 +26,15 @@ const ticketSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
-    }
+    },
+
+    comments: [
+        {
+            text: {type: String, required: true},
+            postedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'user'},
+            createdAt: {type: Date, default: Date.now}
+        }
+    ]
 }, {
     timestamps: true
 });

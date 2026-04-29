@@ -47,10 +47,10 @@ router.get('/:id', jwtValidation, async (req, res) => {
             .populate({path: 'createdBy', select: '-jobTitle -password'})
             .populate({path: 'assignedTo', select: '-jobTitle -password'})
             .exec();
-        if (!foundTicket) return res.status(404).send('Ticket not found');
+        if (!foundTicket) return res.status(404).json({message: `Ticket with ID ${id} not found`});
             return res.status(200).json(foundTicket);
     } catch (e) {
-        console.error('Error fetching: ', e);
+        console.log('Error fetching: ', e);
         res.status(500).send('Internal server error');
     }
 });
