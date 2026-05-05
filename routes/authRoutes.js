@@ -54,7 +54,7 @@ router.post('/register', profileValidationRules, async (req, res) => {
             },
         };
 
-        const authtoken = jwt.sign(payload, JWT_SECRET);
+        const authToken = jwt.sign(payload, JWT_SECRET);
         logger.info('User registered successfully');
         return res.status(201).json({authToken: authToken, firstName: theUser.firstName, email: email, message: "User registered"});
     } catch (e) {

@@ -46,6 +46,7 @@ router.get('/:id', jwtValidation, async (req, res) => {
         const foundTicket = await ticket.findById(id)
             .populate({path: 'createdBy', select: '-jobTitle -password'})
             .populate({path: 'assignedTo', select: '-jobTitle -password'})
+            .populate({path: 'comments.postedBy', select: 'firstName lastName'})
             .exec();
         if (!foundTicket) return res.status(404).json({message: `Ticket with ID ${id} not found`});
             return res.status(200).json(foundTicket);
@@ -58,7 +59,28 @@ router.get('/:id', jwtValidation, async (req, res) => {
 router.put('/:id', jwtValidation, async (req, res) => {
     try {
         const id = req.params.id;
-        const updatedTicket = await ticket.findByIdAndUpdate(id, { $set: req.body }, {new: true});
+        const { status, assignedUser, newComment } = req.body;
+
+        const updateOperation = {};
+
+        const setFields = {};
+        if (status) setFields.status = status;
+        if (assignedUser) setFields.assignedTo = assignedUser;
+
+        if (Object.keys(setFields).length > 0) {
+            updateOperation.$set = setFields;
+        }
+
+        if (newComment && newComment.text !== "") {
+            updateOperation.$push = {
+                comments: {
+                    text: newComment.text,
+                    postedBy: newComment.postedBy
+                }
+            };
+        }
+
+        const updatedTicket = await ticket.findByIdAndUpdate(id, updateOperation, {returnDocument: 'after'});
 
         if (!updatedTicket) return res.status(404).send('Ticket not found');
         return res.status(200).json({ticket: updatedTicket, message: `Ticket #${updatedTicket._id} updated!`});      

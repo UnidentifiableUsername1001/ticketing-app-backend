@@ -25,13 +25,13 @@ const ticketSchema = new Schema({
     assignedTo: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
+        required: false,
     },
 
     comments: [
         {
             text: {type: String, required: true},
-            postedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'user'},
+            postedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
             createdAt: {type: Date, default: Date.now}
         }
     ]
