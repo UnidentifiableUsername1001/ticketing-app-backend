@@ -8,24 +8,34 @@ const ticketSchema = new Schema({
         type: String,
         required: true,
     },
+
     description: {
         type: String,
         required: true
     },
+
     status: {
         type: String,
         required: true,
         enum: validStatus
     },
+    
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true,
     },
+
     assignedTo: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: false,
+    },
+
+    departmentId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Department',
+        required: true
     },
 
     comments: [
