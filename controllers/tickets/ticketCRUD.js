@@ -2,8 +2,9 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv'); dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const mongoose = require('mongoose');
-const ticket = require('../models/ticket');
-const user = require('../models/user');
+const ticket = require('../../models/ticket');
+const user = require('../../models/user');
+const overflowComments = require('../../models/commentOverflow');
 
 const ticketCreate = async (req, res) => {
     try {
@@ -52,10 +53,10 @@ const ticketGetById = async (req, res) => {
     }
 };
 
-const ticketUpdate = async (req, res) => {
+const ticketUpdateMeta = async (req, res) => {
         try {
         const id = req.params.id;
-        const { status, assignedUser, newComment } = req.body;
+        const { status, assignedUser } = req.body;
 
         const updateOperation = {};
 
@@ -65,15 +66,6 @@ const ticketUpdate = async (req, res) => {
 
         if (Object.keys(setFields).length > 0) {
             updateOperation.$set = setFields;
-        }
-
-        if (newComment && newComment.text !== "") {
-            updateOperation.$push = {
-                comments: {
-                    text: newComment.text,
-                    postedBy: newComment.postedBy
-                }
-            };
         }
 
         const updatedTicket = await ticket.findByIdAndUpdate(id, updateOperation, {returnDocument: 'after'});
@@ -86,9 +78,43 @@ const ticketUpdate = async (req, res) => {
     }
 };
 
+const addTicketComment = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const ticketToUpdate = await ticket.findById(id).exec();
+
+        if (!ticketToUpdate) return res.status(404).send('Ticket not found');
+
+        if (ticketToUpdate.comments.length < 50) {
+            ticketToUpdate.comments.push(req.body.newComment);
+            await ticketToUpdate.save();
+            return res.status(200).json({ticket: ticketToUpdate});
+        } else {
+            const oldestComment = ticketToUpdate.comments[0];
+            const newOverflowComment = new overflowComments({
+                text: oldestComment.text,
+                postedBy: oldestComment.postedBy,
+                createdAt: oldestComment.createdAt,
+                relatedTicket: ticketToUpdate._id
+            });
+
+            await newOverflowComment.save();
+            ticketToUpdate.comments.shift();
+
+            ticketToUpdate.comments.push(req.body.newComment);
+            await ticketToUpdate.save();
+            return res.status(200).json({ticket: ticketToUpdate});
+        };
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send('Internal server error');
+    }
+};
+
 module.exports = {
     ticketCreate,
     ticketGetAll,
     ticketGetById,
-    ticketUpdate
+    ticketUpdateMeta,
+    addTicketComment
 };

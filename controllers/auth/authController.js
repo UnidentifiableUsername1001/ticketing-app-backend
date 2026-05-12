@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const pino = require('pino');
 const logger = pino();
 const mongoose = require('mongoose');
-const user = require('../models/user');
+const user = require('../../models/user');
 
 const registerController = async (req, res) => {
     const result = validationResult(req);

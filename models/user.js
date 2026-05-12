@@ -46,6 +46,7 @@ const userSchema = new Schema ({
     timestamps: true
 });
 
+userSchema.index({departmentId: 1, role: 1, jobTitle: 1})
 
 const user = mongoose.model('User', userSchema);
 

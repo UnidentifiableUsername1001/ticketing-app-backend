@@ -5,8 +5,8 @@ const router = express.Router();
 const dotenv = require('dotenv'); dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const mongoose = require('mongoose');
-const ticket = require('../models/ticket');
-const user = require('../models/user');
+const ticket = require('../../models/ticket');
+const user = require('../../models/user');
 
 const userGetAll = async (req, res) => {
         try {
