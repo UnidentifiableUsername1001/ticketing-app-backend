@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const { Schema, SchemaTypes, model } = mongoose;
 
-const validPermissions = ["Admin", "DeptManager", "Employee"];
+const validPermissions = ["Admin", "DeptManager", "User"];
 
 const userSchema = new Schema ({
 
@@ -38,15 +38,15 @@ const userSchema = new Schema ({
 
     role: [{
         type: String,
-        required: false,
+        required: true,
         enum: validPermissions,
-        default: 'Employee'
+        default: 'User'
     }],
 }, {
     timestamps: true
 });
 
-userSchema.index({departmentId: 1, role: 1, jobTitle: 1})
+userSchema.index({departmentId: 1, role: 1, jobTitle: 1});
 
 const user = mongoose.model('User', userSchema);
 

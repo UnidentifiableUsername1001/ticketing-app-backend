@@ -9,14 +9,6 @@ const departmentSchema = new Schema({
         trim: true
     },
 
-    routingRules: {
-        autoAssignStrategy: {
-            type: String,
-            enum: ['Manual', 'RoundRobin', 'LoadBalanced'],
-            default: 'Manual'
-        }
-    },
-
     ticketTypes: [{
         typeName: { type: String, required: true },
         fields: [{

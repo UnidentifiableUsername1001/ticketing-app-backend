@@ -8,12 +8,16 @@ const overflowComments = require('../../models/commentOverflow');
 
 const ticketCreate = async (req, res) => {
     try {
+        const custAttributes = req.body.customAttributes ? req.body.customAttributes.map(({key, value}) => ({key: key, value: value})) : [];
+
         const newTicket = new ticket({
             title: req.body.title,
             description: req.body.description,
+            ticketType: req.body.ticketType,
             status: req.body.status,
             createdBy: req.user.id,
-            assignedTo: req.body.assignedUser,
+            departmentId: req.body.departmentId,
+            customAttributes: custAttributes
         });
 
         await newTicket.save();
@@ -24,9 +28,15 @@ const ticketCreate = async (req, res) => {
     };
 };
 
+
 const ticketGetAll = async (req, res) => {
     try {
-        const ticketArray = await ticket.find()
+        const query = {};
+        if (req.user.role !== 'Admin') {
+            query.departmentId = req.user.department;
+        };
+
+        const ticketArray = await ticket.find(query)
             .populate({path: 'createdBy', select: '-jobTitle -password'})
             .populate({path: 'assignedTo', select: '-jobTitle -password'})
             .exec();
@@ -36,6 +46,7 @@ const ticketGetAll = async (req, res) => {
         return res.status(500).send("Internal server error");
     };
 };
+
 
 const ticketGetById = async (req, res) => {
     try {
@@ -53,25 +64,27 @@ const ticketGetById = async (req, res) => {
     }
 };
 
+
 const ticketUpdateMeta = async (req, res) => {
         try {
+
         const id = req.params.id;
+        const ticketToUpdate = await ticket.findById(id);
+
+        if (!ticketToUpdate) return res.status(404).json({message: 'Ticket not found'});
+        if (req.user.department !== ticketToUpdate.departmentId && req.user.role !== 'Admin') {
+            return res.status(403).json({message: "You don't have permission to edit this ticket"})
+        }
+        
         const { status, assignedUser } = req.body;
 
-        const updateOperation = {};
+        if (status) ticketToUpdate.status = status;
+        if (assignedUser) ticketToUpdate.assignedTo = assignedUser;
 
-        const setFields = {};
-        if (status) setFields.status = status;
-        if (assignedUser) setFields.assignedTo = assignedUser;
+        await ticketToUpdate.save();
 
-        if (Object.keys(setFields).length > 0) {
-            updateOperation.$set = setFields;
-        }
-
-        const updatedTicket = await ticket.findByIdAndUpdate(id, updateOperation, {returnDocument: 'after'});
-
-        if (!updatedTicket) return res.status(404).send('Ticket not found');
-        return res.status(200).json({ticket: updatedTicket, message: `Ticket #${updatedTicket._id} updated!`});      
+        return res.status(200).json({ticket: ticketToUpdate, message: `Ticket #${ticketToUpdate._id} updated!`});     
+ 
     } catch (e) {
         console.error('Error processing: ', e);
         res.status(500).send('Internal server error');

@@ -31,7 +31,7 @@ const registerController = async (req, res) => {
             lastName: req.body.lastName,
             email: email,
             password: hash,
-            permissionLevel: "stdUser"
+            permissionLevel: "User"
         });
         
         await newUser.save();
@@ -42,7 +42,7 @@ const registerController = async (req, res) => {
             },
         };
 
-        const authToken = jwt.sign(payload, JWT_SECRET);
+        const authToken = jwt.sign(payload, JWT_SECRET, {expiresIn: '1h'});
         logger.info('User registered successfully');
         return res.status(201).json({authToken: authToken, firstName: newUser.firstName, email: email, message: "User registered"});
     } catch (e) {
@@ -71,10 +71,12 @@ const loginController = async (req, res) => {
         let payload = {
             user: {
                 id: theUser._id.toString(),
+                role: theUser.role,
+                department: theUser.departmentId
             },
         };
 
-        const authToken = jwt.sign(payload, JWT_SECRET);
+        const authToken = jwt.sign(payload, JWT_SECRET, {expiresIn: '1h'});
         logger.info('User logged in successfully');
         return res.status(200).json({authToken: authToken, firstName: theUser.firstName, email: email, message: "User logged in!"});
         } else {
