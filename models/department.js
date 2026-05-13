@@ -12,10 +12,10 @@ const departmentSchema = new Schema({
     ticketTypes: [{
         typeName: { type: String, required: true },
         fields: [{
-            name: {type: String},
-            expectedType: {type: String, enum: ['String', 'Number', 'Dropdown', 'Boolean']},
-            required: {type: Boolean, enum: [true, false]}
-        }]
+            name: {type: String, required: true},
+            expectedType: {type: String, enum: ['String', 'Number', 'Dropdown', 'Boolean'], required: true},
+            required: {type: Boolean, enum: [true, false], required: true}
+        }],
     }]
 }, { timestamps: true });
 

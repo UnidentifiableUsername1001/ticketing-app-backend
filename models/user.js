@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const { Schema, SchemaTypes, model } = mongoose;
 
-const validPermissions = ["Admin", "DeptManager", "User"];
+const validPermissions = ["Admin", "Manager", "User"];
 
 const userSchema = new Schema ({
 

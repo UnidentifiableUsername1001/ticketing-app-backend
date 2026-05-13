@@ -31,7 +31,7 @@ const ticketCreate = async (req, res) => {
 
 const ticketGetAll = async (req, res) => {
     try {
-        const query = {};
+        let query = {};
         if (req.user.role !== 'Admin') {
             query.departmentId = req.user.department;
         };
