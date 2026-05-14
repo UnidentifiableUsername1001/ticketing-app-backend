@@ -36,12 +36,12 @@ const userSchema = new Schema ({
         required: true
     },
 
-    role: [{
+    role: {
         type: String,
         required: true,
         enum: validPermissions,
         default: 'User'
-    }],
+    },
 }, {
     timestamps: true
 });

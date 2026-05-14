@@ -7,6 +7,7 @@ const app = express();
 const authRoutes = require('./routes/authRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
 const userRoutes = require('./routes/userRoutes');
+const departmentRoutes = require('./routes/departmentRoutes');
 
 app.use(cors());
 portfinder.basePort = process.env.PORT || 3000;
@@ -24,6 +25,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/ticket', ticketRoutes);
 
 app.use('/api/users', userRoutes);
+
+app.use('/api/department', departmentRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
