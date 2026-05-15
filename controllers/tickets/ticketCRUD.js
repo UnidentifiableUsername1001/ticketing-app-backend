@@ -40,11 +40,46 @@ const ticketGetAll = async (req, res) => {
             .populate({path: 'createdBy', select: '-jobTitle -password'})
             .populate({path: 'assignedTo', select: '-jobTitle -password'})
             .exec();
+
             return res.status(200).json({message: "Tickets loaded", ticketArray: ticketArray});  
+
     } catch (e) {
         console.error('Error processing: ', e);
         return res.status(500).send("Internal server error");
     };
+};
+
+const ticketSearch = async (req, res) => {
+    try {
+        let query = {};
+        const { page = 1, limit = 10} = req.query;
+        const reqObjKey = Object.keys(req.query);
+        const reqObjValue = Object.keys(req.query).map(key => req.query[key]);
+        
+        const setQuery = () => {
+            const whiteList = ['_id', 'status', 'departmentId', 'ticketType', 'assignedTo', 'createdBy'];
+            for (let i = 0; i < reqObjValue.length; i++) {
+                if (reqObjValue[i] !== undefined && reqObjValue[i] !== "" && whiteList.includes(reqObjKey[i])) {
+                        query[reqObjKey[i]] = reqObjValue[i]
+                }
+            };
+        };
+
+        setQuery();
+
+        if (Object.keys(query).length === 0){
+            return res.status(400).json({message: "Please input search parameters"});
+        }
+
+        const searchArray = await ticket.find(query).limit(limit * 1).skip((page -1 ) * limit).sort({createdAt: -1});
+        const count = await ticket.countDocuments(query);
+
+        return res.status(200).json({message: "Search complete", results: searchArray, totalPages: Math.ceil(count / limit), currentPage: page,});
+
+    } catch (e) {
+        console.error('Error processing: ', e);
+        return res.status(500).send("Internal server error");
+    }
 };
 
 
@@ -56,8 +91,11 @@ const ticketGetById = async (req, res) => {
             .populate({path: 'assignedTo', select: '-jobTitle -password'})
             .populate({path: 'comments.postedBy', select: 'firstName lastName'})
             .exec();
+
         if (!foundTicket) return res.status(404).json({message: `Ticket with ID ${id} not found`});
+
             return res.status(200).json(foundTicket);
+
     } catch (e) {
         console.log('Error fetching: ', e);
         res.status(500).send('Internal server error');
