@@ -5,10 +5,12 @@ const mongoose = require('mongoose');
 const ticket = require('../../models/ticket');
 const user = require('../../models/user');
 const overflowComments = require('../../models/commentOverflow');
+const ticketServices = require('../../services/ticket-services/ticketServices');
 
 const ticketCreate = async (req, res) => {
     try {
         const custAttributes = req.body.customAttributes ? req.body.customAttributes.map(({key, value}) => ({key: key, value: value})) : [];
+        const ticketAssignment = ticketServices(req.body.departmentId);
 
         const newTicket = new ticket({
             title: req.body.title,
@@ -17,10 +19,12 @@ const ticketCreate = async (req, res) => {
             status: req.body.status,
             createdBy: req.user.id,
             departmentId: req.body.departmentId,
+            assignedTo: ticketAssignment,
             customAttributes: custAttributes
         });
 
         await newTicket.save();
+
         return res.status(201).json({message: `Ticket #${newTicket._id} created!`})
     } catch (e) {
         console.error('Error processing: ', e);

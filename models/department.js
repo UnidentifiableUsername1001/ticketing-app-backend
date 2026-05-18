@@ -16,7 +16,15 @@ const departmentSchema = new Schema({
             expectedType: {type: String, enum: ['String', 'Number', 'Dropdown', 'Boolean'], required: true},
             required: {type: Boolean, enum: [true, false], required: true}
         }],
-    }]
+    }],
+
+    config: {
+        assignmentStrategy: {
+            type: String,
+            enum: ['load balance', 'manual'],
+            required: true
+        }
+    }
 }, { timestamps: true });
 
 const department = mongoose.model('Department', departmentSchema);
