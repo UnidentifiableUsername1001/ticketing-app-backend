@@ -23,6 +23,7 @@ const ticketSchema = new Schema({
     ticketType: {
         type: String,
         required: true,
+        default: 'Default'
     },
 
     status: {
@@ -49,14 +50,11 @@ const ticketSchema = new Schema({
         required: true
     },
 
-    comments: [
-        {
-            text: {type: String, required: true},
-            postedBy: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-            createdAt: {type: Date, default: Date.now}
-        }
-    ],
-
+    followers: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    }],
+    
     customAttributes: [
         {
             key: {type: String, required: true},
@@ -80,7 +78,7 @@ ticketSchema.pre('save', async function (next) {
             {new: true, upsert: true}
         );
         
-        this.ticketNumber = ticketCounterounter.sequenceValue;
+        this.ticketNumber = ticketCounter.sequenceValue;
         next();
     } catch (e) {
         next(e);
