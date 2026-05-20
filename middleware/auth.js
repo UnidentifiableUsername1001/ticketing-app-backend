@@ -12,12 +12,16 @@ const requireAuth = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(splitToken, JWT_SECRET);
+
+        if (decoded.user.scope == 'password_reset_only') return res.status(401).json({message: 'Token type allows password reset only'});
+
         if (decoded) {
             req.user = decoded.user;
             next();
         }
     } catch (err) {
-        res.status(401).json({error: err, message: 'Error validating'});
+        console.log(err);
+       return res.status(401).json({error: err, message: 'Error validating'});
     }
 };
 

@@ -30,6 +30,12 @@ const userSchema = new Schema ({
         required: true
     },
 
+    passwordResetRequired: {
+        type: Boolean,
+        require: true,
+        default: true,
+    },
+
     departmentId: {
         type: Schema.Types.ObjectId,
         ref: 'Department',
