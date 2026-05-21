@@ -94,7 +94,6 @@ const ticketGetById = async (req, res) => {
         const foundTicket = await ticket.findById(id)
             .populate({path: 'createdBy', select: '-jobTitle -password'})
             .populate({path: 'assignedTo', select: '-jobTitle -password'})
-            .populate({path: 'comments.postedBy', select: 'firstName lastName'})
             .exec();
 
         if (!foundTicket) return res.status(404).json({message: `Ticket with ID ${id} not found`});
@@ -165,7 +164,6 @@ const addTicketComment = async (req, res) => {
 
             mentions = sanitisedMentions;
 
-
         } else {
             mentions = [];
         };
@@ -184,10 +182,33 @@ const addTicketComment = async (req, res) => {
         };
 
         const newComment = new comments(commentPayload);
-
         await newComment.save();
 
         return res.status(201).json({message: "Comment added"});
+
+    } catch (e) {
+        console.log(e);
+        return res.status(500).send('Internal server error');
+    }
+};
+
+const getComments = async (req, res) => {
+    try {
+        const { page = 1, limit = 10 } = req.query;
+        const ticketId = req.params.id;
+
+        const commentArray = await comments.find({ticketId: ticketId})
+            .limit(limit * 1)
+            .skip((page -1 ) * limit)
+            .sort({createdAt: -1})
+            .populate({path: 'postedBy', select: 'firstName lastName'});
+
+        if (commentArray.length == 0) 
+            return res.status(404).json({message: "No comments for this ticket"});
+
+        const count = await comments.countDocuments({ticketId: ticketId});
+
+        return res.status(200).json({message: "Search complete", results: commentArray, totalPages: Math.ceil(count / limit), currentPage: page,});
 
     } catch (e) {
         console.log(e);
@@ -200,5 +221,6 @@ module.exports = {
     ticketGetAll,
     ticketGetById,
     ticketUpdateMeta,
-    addTicketComment
+    addTicketComment,
+    getComments
 };

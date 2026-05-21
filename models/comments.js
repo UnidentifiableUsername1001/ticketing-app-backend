@@ -33,5 +33,7 @@ const commentSchema = new Schema({
     ]
 }, {timestamps: true});
 
+commentSchema.index({ticketId: 1, postedBy: 1});
+
 const comments = mongoose.model('Comment', commentSchema);
 module.exports = comments;

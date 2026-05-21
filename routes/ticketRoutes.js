@@ -10,7 +10,11 @@ router.get('/', jwtValidation, crudCtrl.ticketGetAll);
 
 router.get('/:id', jwtValidation, crudCtrl.ticketGetById);
 
-router.put('/:id', jwtValidation, crudCtrl.ticketUpdate);
+router.get('/:id/comments', jwtValidation, crudCtrl.getComments);
+
+router.put('/:id/update', jwtValidation, crudCtrl.ticketUpdateMeta);
+
+router.post('/:id/comment', jwtValidation, crudCtrl.addTicketComment);
 
 router.get('/presigned-url', jwtValidation, getUploadUrl);
 
