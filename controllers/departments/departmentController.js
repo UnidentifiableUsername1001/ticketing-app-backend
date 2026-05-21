@@ -107,7 +107,6 @@ const deleteTicketType = async (req, res) => {
         if (!targetDept) return res.status(404).json({message: "Department not found"});
         
         const typeToDelete = targetDept.ticketTypes.id(typeId);
-        const typeToDelete = targetDept.ticketTypes.id(typeId);
 
         if (!typeToDelete) {
             return res.status(404).json({ message: "Ticket type template not found" });

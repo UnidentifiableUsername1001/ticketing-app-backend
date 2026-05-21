@@ -37,8 +37,9 @@ const getUpLoadUrl = async (req, res) => {
 
         return res.status(200).json({
             uploadUrl: presignedUrl,
-            fileIrl: publicFileUrl,
-            fileName: fileName
+            fileUrl: publicFileUrl,
+            fileName: fileName,
+            fileType: fileType
         });
     } catch (e) {
         logger.error('Error generating presigned URL', e);

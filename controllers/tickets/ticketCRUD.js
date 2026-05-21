@@ -137,30 +137,58 @@ const ticketUpdateMeta = async (req, res) => {
 const addTicketComment = async (req, res) => {
     try {
         const id = req.params.id;
-        const ticketToUpdate = await ticket.findById(id).exec();
 
-        if (!ticketToUpdate) return res.status(404).send('Ticket not found');
+        const targetTicket = await ticket.findById(id);
+        if (!targetTicket)
+            return res.status(404).json({message: "Ticket not found"});
 
-        if (ticketToUpdate.comments.length < 50) {
-            ticketToUpdate.comments.push(req.body.newComment);
-            await ticketToUpdate.save();
-            return res.status(200).json({ticket: ticketToUpdate});
+        // I'll assume uploadedFiles and mentions are arrays
+        let { bodyText, uploadedFiles, mentions } = req.body;
+        const postedBy = req.user.id;
+
+        if (Array.isArray(uploadedFiles) && uploadedFiles.length !==0) {
+            const sanitisedFiles = uploadedFiles.map(file => ({
+                fileName: file.fileName,
+                fileUrl: file.fileUrl,
+                fileType: file.fileType
+            }));
+
+            uploadedFiles = sanitisedFiles;
         } else {
-            const oldestComment = ticketToUpdate.comments[0];
-            const newOverflowComment = new overflowComments({
-                text: oldestComment.text,
-                postedBy: oldestComment.postedBy,
-                createdAt: oldestComment.createdAt,
-                relatedTicket: ticketToUpdate._id
-            });
-
-            await newOverflowComment.save();
-            ticketToUpdate.comments.shift();
-
-            ticketToUpdate.comments.push(req.body.newComment);
-            await ticketToUpdate.save();
-            return res.status(200).json({ticket: ticketToUpdate});
+            uploadedFiles = [];
         };
+
+        if (Array.isArray(mentions) && mentions.length !==0) {
+            const sanitisedMentions = mentions.map(mention => (
+                mention._id
+            ));
+
+            mentions = sanitisedMentions;
+
+
+        } else {
+            mentions = [];
+        };
+
+        const count = await user.countDocuments({_id: { $in: mentions } });
+
+        if(mentions.length !== count && mentions.length !== 0) 
+            return res.status(400).json({message: "1 or more mentioned users don't exist in the database"});
+
+        const commentPayload = {
+            ticketId: id,
+            postedBy: postedBy,
+            bodyText: bodyText,
+            mentions: mentions,
+            attachments: uploadedFiles
+        };
+
+        const newComment = new comments(commentPayload);
+
+        await newComment.save();
+
+        return res.status(201).json({message: "Comment added"});
+
     } catch (e) {
         console.log(e);
         return res.status(500).send('Internal server error');
