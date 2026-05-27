@@ -13,7 +13,7 @@ const s3 = new S3Client({
     }
 });
 
-const getUpLoadUrl = async (req, res) => {
+const getUploadUrl = async (req, res) => {
     try {
         const { fileName, fileType } = req.query;
 

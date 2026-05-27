@@ -36,7 +36,7 @@ const loginController = async (req, res) => {
                     }
                 };
                 const tempAuthToken = jwt.sign(payload, JWT_SECRET, {expiresIn: '10m'});
-                return res.status(200).json({message: "Password reset required", JWT: tempAuthToken});
+                return res.status(200).json({message: "Password reset required", authToken: tempAuthToken});
             }
 
             let payload = {
@@ -58,7 +58,6 @@ const loginController = async (req, res) => {
 };
 
 const passwordReset = async (req, res) => {
-
     const result = validationResult(req);
     if (!result.isEmpty()) {
         logger.error('Validation errors in request', result.array());
@@ -71,7 +70,7 @@ const passwordReset = async (req, res) => {
         if (!theUser) return res.status(404).json({message: "User not found"});
 
         const oldPassword = await bcrypt.compare(req.body.oldPassword, theUser.password);
-        if (!oldPassword) return res.status(400).json({messaged: "Incorrect existing password"});
+        // if (!oldPassword) return res.status(400).json({messaged: "Incorrect existing password"});
 
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(req.body.newPassword, salt);

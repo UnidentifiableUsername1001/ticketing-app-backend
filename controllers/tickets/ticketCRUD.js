@@ -4,7 +4,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const mongoose = require('mongoose');
 const ticket = require('../../models/ticket');
 const user = require('../../models/user');
-const overflowComments = require('../../models/commentOverflow');
 const ticketServices = require('../../services/ticket-services/ticketServices');
 const comments = require('../../models/comments');
 
