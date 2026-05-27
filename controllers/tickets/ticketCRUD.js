@@ -118,7 +118,7 @@ const ticketUpdateMeta = async (req, res) => {
             return res.status(403).json({message: "You don't have permission to edit this ticket"})
         }
         
-        const { status, assignedUser } = req.body;
+        const { status, assignedUser, follower } = req.body;
 
         if (status) ticketToUpdate.status = status;
         if (assignedUser) ticketToUpdate.assignedTo = assignedUser;
@@ -129,6 +129,26 @@ const ticketUpdateMeta = async (req, res) => {
  
     } catch (e) {
         console.error('Error processing: ', e);
+        res.status(500).send('Internal server error');
+    }
+};
+
+const followTicket = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const ticketToUpdate = await ticket.findById(id);
+
+        if (!ticketToUpdate) return res.status(404).json({message: 'Ticket not found'});
+
+        const { follower } = req.body;
+
+        ticketToUpdate.followers = follower;
+
+        await ticketToUpdate.save();
+
+        return res.status(200).json({ticket: ticketToUpdate, message: `Ticket #${ticketToUpdate._id} updated!`});
+    } catch (e) {
+        console.error(e)
         res.status(500).send('Internal server error');
     }
 };
@@ -203,9 +223,6 @@ const getComments = async (req, res) => {
             .sort({createdAt: -1})
             .populate({path: 'postedBy', select: 'firstName lastName'});
 
-        if (commentArray.length == 0) 
-            return res.status(404).json({message: "No comments for this ticket"});
-
         const count = await comments.countDocuments({ticketId: ticketId});
 
         return res.status(200).json({message: "Search complete", results: commentArray, totalPages: Math.ceil(count / limit), currentPage: page,});
@@ -222,5 +239,6 @@ module.exports = {
     ticketGetById,
     ticketUpdateMeta,
     addTicketComment,
-    getComments
+    getComments,
+    followTicket
 };

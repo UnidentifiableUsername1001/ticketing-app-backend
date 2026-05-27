@@ -16,6 +16,8 @@ router.put('/:id/update', jwtValidation, crudCtrl.ticketUpdateMeta);
 
 router.post('/:id/comment', jwtValidation, crudCtrl.addTicketComment);
 
+router.get('/:id/follow', jwtValidation, crudCtrl.followTicket);
+
 router.get('/presigned-url', jwtValidation, getUploadUrl);
 
 module.exports = router;
