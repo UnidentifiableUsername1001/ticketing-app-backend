@@ -50,7 +50,7 @@ const loginController = async (req, res) => {
 
             const authToken = jwt.sign(payload, JWT_SECRET, {expiresIn: '1h'});
             logger.info('User logged in successfully');
-            return res.status(200).json({authToken: authToken, firstName: theUser.firstName, email: email, message: "User logged in!"});
+            return res.status(200).json({authToken: authToken, firstName: theUser.firstName, lastName: theUser.lastName, email: email, message: "User logged in!"});
     } catch (e) {
         logger.error(e);
         return res.status(500).json({message: 'Internal server error', details: e.message});
@@ -70,7 +70,7 @@ const passwordReset = async (req, res) => {
         if (!theUser) return res.status(404).json({message: "User not found"});
 
         const oldPassword = await bcrypt.compare(req.body.oldPassword, theUser.password);
-        // if (!oldPassword) return res.status(400).json({messaged: "Incorrect existing password"});
+        if (!oldPassword) return res.status(400).json({messaged: "Incorrect existing password"});
 
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(req.body.newPassword, salt);
