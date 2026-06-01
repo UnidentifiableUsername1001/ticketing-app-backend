@@ -74,13 +74,16 @@ const updateUser = async (req, res) => {
             return res.status(403).json({message: "Not authorised to update users outside your department"});
         }
 
-        const { firstName, lastName, jobTitle, departmentId } = req.body;
+        const { firstName, lastName, jobTitle, departmentId, role, passwordResetRequired, email } = req.body;
         const setFields = {};
 
-        if (firstName !== undefined) setFields.firstName = firstName.trim();
-        if (lastName !== undefined) setFields.lastName = lastName.trim();
-        if (jobTitle !== undefined) setFields.jobTitle = jobTitle.trim();
-        if (departmentId !== undefined) setFields.departmentId = departmentId;
+        if (firstName !== undefined && firstName !== '') setFields.firstName = firstName.trim();
+        if (lastName !== undefined && lastName !== '') setFields.lastName = lastName.trim();
+        if (jobTitle !== undefined && jobTitle !== '') setFields.jobTitle = jobTitle.trim();
+        if (departmentId !== undefined && departmentId !== '') setFields.departmentId = departmentId;
+        if (role !== undefined && role !== '') setFields.role = role;
+        if (passwordResetRequired !== undefined) setFields.passwordResetRequired = passwordResetRequired;
+        if (email !== undefined && email !== '') setFields.email = email;
 
         if (Object.keys(setFields).length === 0) {
             return res.status(400).json({ message: "No valid fields provided for update" });

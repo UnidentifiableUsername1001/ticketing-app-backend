@@ -48,6 +48,30 @@ const createDepartment = async (req, res) => {
     }
 };
 
+const getAllDepartments = async (req, res) => {
+    try {
+        const deptArray = await department.find({}).exec();
+        return res.status(200).json({departments: deptArray});
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+const getDeptById = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const targetDept = await department.findById({_id: id});
+
+        if (!targetDept) return res.status(404).json({message: "Department not found"});
+
+        return res.status(200).json({department: targetDept});
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
 const newTicketType = async (req, res) => {
     try {
         let { ticketTypes } = req.body;
@@ -124,5 +148,7 @@ const deleteTicketType = async (req, res) => {
 module.exports = {
     createDepartment,
     newTicketType,
-    deleteTicketType
+    deleteTicketType,
+    getAllDepartments,
+    getDeptById
 };
