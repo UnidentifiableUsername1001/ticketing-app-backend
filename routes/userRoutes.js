@@ -9,6 +9,8 @@ const { verifyRole } = require('../middleware/rbac');
 
 router.get('/', jwtValidation.requireAuthStandard, userCrudCtrl.userGetAll);
 
+router.get('/:id', jwtValidation.requireAuthStandard, userCrudCtrl.getUserById);
+
 router.post('/new-user', jwtValidation.requireAuthStandard, verifyRole(['Admin']));
 
 router.put('/update-user/:userId', jwtValidation.requireAuthStandard, verifyRole(['Admin', 'Manager']));

@@ -11,13 +11,26 @@ const department = require('../../models/department');
 
 const userGetAll = async (req, res) => {
         try {
-        const userArray = await user.find({}).select('-password -permissionLevel').exec();
+        const userArray = await user.find({}).select('-password').exec();
         return res.status(200).json({userArray: userArray});
     } catch (e) {
-        console.log('Error: ' + e)
-        res.status(500).send('Internal server error')
+        console.log('Error: ' + e);
+        res.status(500).send('Internal server error');
     }
 };
+
+const getUserById = async (req, res) => {
+    try {
+        const targetUser = await user.findById(req.params.id).select('-password').exec();
+
+        if(!targetUser) return res.status(404).json({message: `User with ID: ${req.params.id}  not found`});
+
+        return res.status(200).json({message: "User found!", user: targetUser});
+    } catch (e) {
+        console.log(e);
+        res.status(500).send('Internal server error');
+    }
+}
 
 const createUser = async (req, res) => {
     try {
@@ -106,5 +119,6 @@ const updateUser = async (req, res) => {
 module.exports = {
     userGetAll,
     createUser,
-    updateUser
+    updateUser,
+    getUserById
 }
