@@ -58,7 +58,7 @@ const ticketSchema = new Schema({
     customAttributes: [
         {
             key: {type: String, required: true},
-            value: {type: String, required: true}
+            value: {}
         }
     ]
 }, {
