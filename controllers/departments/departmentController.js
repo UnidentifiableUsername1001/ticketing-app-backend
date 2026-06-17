@@ -5,7 +5,7 @@ const department = require('../../models/department');
 
 const createDepartment = async (req, res) => {
     try {
-        let { name, ticketTypes } = req.body;
+        let { name, ticketTypes, config } = req.body;
         
         if (Array.isArray(ticketTypes) && ticketTypes.length !== 0) {
             const sanitisedTicketTypes = ticketTypes.map(ticketType => {
@@ -13,6 +13,7 @@ const createDepartment = async (req, res) => {
                 const sanitisedFields = rawFields.map(field => ({
                     name: field.name,
                     expectedType: field.expectedType,
+                    dataSource: field.dataSource,
                     required: field.required
                 }));
 
@@ -33,7 +34,8 @@ const createDepartment = async (req, res) => {
 
         const deptPayload = {
             name: name.trim(),
-            ticketTypes: ticketTypes
+            ticketTypes: ticketTypes,
+            config: config
         };
         const newDepartment = new department(deptPayload);
         await newDepartment.save();
@@ -72,26 +74,53 @@ const getDeptById = async (req, res) => {
     }
 }
 
-const newTicketType = async (req, res) => {
+const editDepartment = async (req, res) => {
     try {
-        let { ticketTypes } = req.body;
+
+        const { deptUpdateObj } = req.body;
         let query = null;
 
         if (req.user.role !== 'admin') {
             query = req.user.department;
         } else {
-            query = req.body.departmentId;
+            query = req.params.deptId;
         };
 
         const targetDept = await department.findById(query);
         if (!targetDept) return res.status(404).json({message: "Department not found"});
 
-        if (Array.isArray(ticketTypes) && ticketTypes.length !== 0) {
-            const sanitisedTicketTypes = ticketTypes.map(ticketType => {
+       const deptPairsArray = Object.entries(deptUpdateObj);
+
+       const cleanedPairs = deptPairsArray.filter((pair) => {
+            const sanitised = typeof pair[1] === 'string' ? pair[1].trim() : pair[1];
+            switch(true) {
+                case sanitised === undefined:
+                case sanitised === null:
+                case sanitised === '':
+                    return false;
+
+                case Array.isArray(pair[1]) && pair[1].length === 0:
+                    return false;
+
+                case typeof pair[1] === 'object' && pair[1] !== null && Object.keys(pair[1]).length === 0:
+                    return false;
+
+                default:
+                    return true;
+            };
+       });
+
+       let cleanedUpdateObj = Object.fromEntries(cleanedPairs);
+
+        // sanitisation for ticket types and fields
+        if (Array.isArray(cleanedUpdateObj.ticketTypes) && cleanedUpdateObj.ticketTypes.length !== 0) {
+
+            const sanitisedTicketTypes = cleanedUpdateObj.ticketTypes.map(ticketType => {
                 const rawFields = Array.isArray(ticketType.fields) ? ticketType.fields : [];
                 const sanitisedFields = rawFields.map(field => ({
                     name: field.name,
                     expectedType: field.expectedType,
+                    dataSource: field.dataSource,
                     required: field.required
                 }));
 
@@ -101,15 +130,13 @@ const newTicketType = async (req, res) => {
                 };
             });
 
-            ticketTypes = sanitisedTicketTypes;
-        } else {
-            return res.status(400).json({message: 'Incorrect format or no data was sent'});
+            cleanedUpdateObj.ticketTypes = sanitisedTicketTypes;
         };
 
-        targetDept.ticketTypes.push(...ticketTypes);
+        targetDept.set(cleanedUpdateObj);
         await targetDept.save();
 
-        return res.status(200).json({message: 'New Ticket Type added!'})
+        return res.status(200).json({message: 'Department Updated', department: targetDept})
     } catch (e) {
         console.log(e);
         return res.status(500).json({ message: "Internal server error" });
@@ -147,7 +174,7 @@ const deleteTicketType = async (req, res) => {
 
 module.exports = {
     createDepartment,
-    newTicketType,
+    editDepartment,
     deleteTicketType,
     getAllDepartments,
     getDeptById

@@ -10,7 +10,7 @@ router.get('/:id', jwtValidation.requireAuthStandard, deptController.getDeptById
 
 router.post('/new-department', jwtValidation.requireAuthStandard, verifyRole(['Admin']), deptController.createDepartment);
 
-router.post('/new-ticket-type', jwtValidation.requireAuthStandard, verifyRole(['Admin', 'Manager']), deptController.newTicketType);
+router.put('/edit-department/:deptId', jwtValidation.requireAuthStandard, verifyRole(['Admin', 'Manager']), deptController.editDepartment);
 
 router.delete('/:deptId/ticket-types/:typeId', jwtValidation.requireAuthStandard, verifyRole(['Admin', 'Manager']), deptController.deleteTicketType);
 
