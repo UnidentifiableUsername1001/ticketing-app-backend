@@ -52,7 +52,7 @@ const createDepartment = async (req, res) => {
 
 const getAllDepartments = async (req, res) => {
     try {
-        const deptArray = await department.find({}).exec();
+        const deptArray = await department.find({}).select('-ticketTypes -config').exec();
         return res.status(200).json({departments: deptArray});
     } catch (e) {
         console.log(e);
@@ -96,15 +96,7 @@ const editDepartment = async (req, res) => {
             switch(true) {
                 case sanitised === undefined:
                 case sanitised === null:
-                case sanitised === '':
                     return false;
-
-                case Array.isArray(pair[1]) && pair[1].length === 0:
-                    return false;
-
-                case typeof pair[1] === 'object' && pair[1] !== null && Object.keys(pair[1]).length === 0:
-                    return false;
-
                 default:
                     return true;
             };
@@ -145,30 +137,26 @@ const editDepartment = async (req, res) => {
 
 const deleteTicketType = async (req, res) => {
     try {
-        const id = req.params.deptId;
-        const userDept = req.user.department;
-        const typeId = req.params.typeId;
 
-        if (userDept !== id && req.user.role !== 'admin') {
-            return res.status(403).json({message: "User not permitted to submit this request"});
-        }
+        const type = req.body.typeName;
 
-        const targetDept = await department.findById(id);
+        let query = null;
 
-        if (!targetDept) return res.status(404).json({message: "Department not found"});
+        if (req.user.role !== 'admin') {
+            query = req.user.department;
+        } else {
+            query = req.params.deptId;
+        };
+
+        const pullTicket = await department.updateOne(
+            {_id: query},
+            { $pull: {ticketTypes: { typeName: type } } }
+        );
         
-        const typeToDelete = targetDept.ticketTypes.id(typeId);
-
-        if (!typeToDelete) {
-            return res.status(404).json({ message: "Ticket type template not found" });
-        }
-        
-        typeToDelete.deleteOne();
-
-        await targetDept.save();
+        return res.status(200).json({message: 'Ticket removed!'})
     } catch (e) {
         console.log(e);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Internal server error", error: e });
     }
 };
 

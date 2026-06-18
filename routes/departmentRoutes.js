@@ -12,6 +12,6 @@ router.post('/new-department', jwtValidation.requireAuthStandard, verifyRole(['A
 
 router.put('/edit-department/:deptId', jwtValidation.requireAuthStandard, verifyRole(['Admin', 'Manager']), deptController.editDepartment);
 
-router.delete('/:deptId/ticket-types/:typeId', jwtValidation.requireAuthStandard, verifyRole(['Admin', 'Manager']), deptController.deleteTicketType);
+// reduntant - router.delete('/:deptId/ticket-types/:typeId', jwtValidation.requireAuthStandard, verifyRole(['Admin', 'Manager']), deptController.deleteTicketType);
 
 module.exports = router;
