@@ -77,10 +77,10 @@ const getDeptById = async (req, res) => {
 const editDepartment = async (req, res) => {
     try {
 
-        const { deptUpdateObj } = req.body;
+        const deptUpdateObj = req.body;
         let query = null;
 
-        if (req.user.role !== 'admin') {
+        if (req.user.role !== 'Admin') {
             query = req.user.department;
         } else {
             query = req.params.deptId;

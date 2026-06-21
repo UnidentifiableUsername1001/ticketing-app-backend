@@ -10,9 +10,6 @@ const requireAuthStandard = (req, res, next) => {
     const array = token.split('Bearer '); 
     const splitToken = array[1];
 
-    console.log(token);
-    console.log(splitToken);
-
     try {
         const decoded = jwt.verify(splitToken, JWT_SECRET);
 
