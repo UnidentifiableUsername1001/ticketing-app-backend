@@ -43,10 +43,28 @@ const ticketGetAll = async (req, res) => {
         const ticketArray = await ticket.find(query)
             .populate({path: 'createdBy', select: '-jobTitle -password'})
             .populate({path: 'assignedTo', select: '-jobTitle -password'})
+            .populate({path: 'departmentId', select: 'name'})
             .exec();
 
             return res.status(200).json({message: "Tickets loaded", ticketArray: ticketArray});  
 
+    } catch (e) {
+        console.error('Error processing: ', e);
+        return res.status(500).send("Internal server error");
+    };
+};
+
+const getRequestedByUser = async (req, res) => {
+    try {
+        const query = req.user.id;
+        
+        const ticketArray = await ticket.find({createdBy: query})
+            .populate({path: 'createdBy', select: '-jobTitle -password'})
+            .populate({path: 'assignedTo', select: '-jobTitle -password'})
+            .populate({path: 'departmentId', select: 'name'})
+            .exec();
+
+        return res.status(200).json({message: "Tickets loaded", ticketArray: ticketArray});
     } catch (e) {
         console.error('Error processing: ', e);
         return res.status(500).send("Internal server error");
