@@ -13,7 +13,7 @@ const departmentSchema = new Schema({
         typeName: { type: String, required: true },
         fields: [{
             name: {type: String, required: true},
-            expectedType: {type: String, enum: ['String', 'Number', 'Array', 'Boolean'], required: true},
+            expectedType: {type: String, required: true},
             dataSource: {type: String, required: false},
             required: {type: Boolean, enum: [true, false], required: true}
         }],

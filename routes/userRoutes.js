@@ -4,7 +4,7 @@ const router = express.Router();
 const dotenv = require('dotenv'); dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const jwtValidation = require('../middleware/auth');
-const userCrudCtrl = require('../controllers/users/userCRUD');
+const userCrudCtrl = require('../controllers/users/userController');
 const { verifyRole } = require('../middleware/rbac');
 
 router.get('/', jwtValidation.requireAuthStandard, userCrudCtrl.userGetAll);

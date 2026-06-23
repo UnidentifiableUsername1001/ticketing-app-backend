@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwtValidation = require('../middleware/auth');
-const crudCtrl = require('../controllers/tickets/ticketCRUD');
+const crudCtrl = require('../controllers/tickets/ticketController');
 const { getUploadUrl } = require('../controllers/tickets/attachmentController');
 
 router.post('/create', jwtValidation.requireAuthStandard, crudCtrl.ticketCreate);
