@@ -8,6 +8,8 @@ router.post('/create', jwtValidation.requireAuthStandard, crudCtrl.ticketCreate)
 
 router.get('/', jwtValidation.requireAuthStandard, crudCtrl.ticketGetAll);
 
+router.get('/', jwtValidation.requireAuthStandard, crudCtrl.getRequestedByUser);
+
 router.get('/:id', jwtValidation.requireAuthStandard, crudCtrl.ticketGetById);
 
 router.get('/:id/comments', jwtValidation.requireAuthStandard, crudCtrl.getComments);
