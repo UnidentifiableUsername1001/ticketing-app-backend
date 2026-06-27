@@ -35,7 +35,9 @@ const ticketCreate = async (req, res) => {
 
 const ticketGetAll = async (req, res) => {
     try {
-        let query = {};
+        let query = {
+            status: { $ne: 'Closed' }
+        };
         if (req.user.role !== 'Admin') {
             query.departmentId = req.user.department;
         };
@@ -43,7 +45,7 @@ const ticketGetAll = async (req, res) => {
         const ticketArray = await ticket.find(query)
             .populate({path: 'createdBy', select: '-jobTitle -password'})
             .populate({path: 'assignedTo', select: '-jobTitle -password'})
-            .populate({path: 'departmentId', select: 'name'})
+            .populate({path: 'departmentId', select: 'name _id'})
             .exec();
 
             return res.status(200).json({message: "Tickets loaded", ticketArray: ticketArray});  
@@ -61,7 +63,7 @@ const getRequestedByUser = async (req, res) => {
         const ticketArray = await ticket.find({createdBy: query})
             .populate({path: 'createdBy', select: '-jobTitle -password'})
             .populate({path: 'assignedTo', select: '-jobTitle -password'})
-            .populate({path: 'departmentId', select: 'name'})
+            .populate({path: 'departmentId', select: 'name _id'})
             .exec();
 
         return res.status(200).json({message: "Tickets loaded", ticketArray: ticketArray});
@@ -77,12 +79,18 @@ const ticketSearch = async (req, res) => {
         const { page = 1, limit = 10} = req.query;
         const reqObjKey = Object.keys(req.query);
         const reqObjValue = Object.keys(req.query).map(key => req.query[key]);
+
         
         const setQuery = () => {
-            const whiteList = ['_id', 'status', 'departmentId', 'ticketType', 'assignedTo', 'createdBy'];
+            const whiteList = ['_id', 'ticketNumber', 'status', 'departmentId', 'ticketType', 'assignedTo', 'createdBy'];
             for (let i = 0; i < reqObjValue.length; i++) {
                 if (reqObjValue[i] !== undefined && reqObjValue[i] !== "" && whiteList.includes(reqObjKey[i])) {
-                        query[reqObjKey[i]] = reqObjValue[i]
+
+                        Array.isArray(reqObjValue[i]) ? 
+                            query[reqObjKey[i]] = { $in: reqObjValue[i] } 
+                            : 
+                            query[reqObjKey[i]] = reqObjValue[i]
+
                 }
             };
         };
@@ -93,15 +101,95 @@ const ticketSearch = async (req, res) => {
             return res.status(400).json({message: "Please input search parameters"});
         }
 
-        const searchArray = await ticket.find(query).limit(limit * 1).skip((page -1 ) * limit).sort({createdAt: -1});
+        const searchArray = await ticket
+            .find(query)
+            .populate({path: 'createdBy', select: '-jobTitle -password'})
+            .populate({path: 'assignedTo', select: '-jobTitle -password'})
+            .populate({path: 'departmentId', select: 'name _id'})
+            .limit(limit * 1)
+            .skip((page -1 ) * limit)
+            .sort({createdAt: -1});
+
         const count = await ticket.countDocuments(query);
 
-        return res.status(200).json({message: "Search complete", results: searchArray, totalPages: Math.ceil(count / limit), currentPage: page,});
+        return res.status(200).json({message: "Search complete", results: searchArray, totalPages: Math.ceil(count / limit), currentPage: page});
 
     } catch (e) {
         console.error('Error processing: ', e);
         return res.status(500).send("Internal server error");
     }
+};
+
+// Hardcoding for now, will come back to this and look into sending everything via url params 
+// and converting to key value array map over for scalability
+const ticketCountForViews = async (req, res) => {
+    try {
+
+        const teamConditional = req.user.role === 'Admin' ? [{
+                $match: {
+                    status: {$ne: 'Closed'}
+                }},
+                {
+                    $count: 'ticketCount'
+                }
+        ] : [{
+            $match: {
+                departmentId: new mongoose.Types.ObjectId(req.user.departmentId),
+                status: {$ne: 'Closed'}
+            }},
+            {
+                $count: 'ticketCount'
+            }
+        ];
+
+        const closedConditional = req.user.role === 'Admin' ? [{
+                $match: {
+                    status: {$eq: 'Closed'}
+                }},
+                {
+                    $count: 'ticketCount'
+                }
+        ] : [{
+            $match: {
+                departmentId: new mongoose.Types.ObjectId(req.user.departmentId),
+                status: {$eq: 'Closed'}
+            }},
+            {
+                $count: 'ticketCount'
+            }
+        ];
+
+        // aggregation
+        const counts = await ticket.aggregate().facet({
+            team: teamConditional,
+            assigned: [{
+                $match: {
+                    assignedTo: new mongoose.Types.ObjectId(req.user.id),
+                    status: {$ne: 'Closed'}
+                }
+                
+            }, 
+            {
+                $count: 'ticketCount'
+            }],
+            raisedByUser: [{
+                $match: {
+                    createdBy: new mongoose.Types.ObjectId(req.user.id),
+                    status: {$ne: 'Closed'}
+                }
+            }, 
+            {
+                $count: 'ticketCount'
+            }],
+            closed: closedConditional
+        }).exec();
+
+        return res.status(200).json({message: 'Ticket counts calculated', ticketCounts: counts})
+
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({message: `Internal server error: ${e}`});
+    };
 };
 
 
@@ -254,8 +342,11 @@ module.exports = {
     ticketCreate,
     ticketGetAll,
     ticketGetById,
+    ticketCountForViews,
     ticketUpdateMeta,
+    ticketSearch,
     addTicketComment,
     getComments,
-    followTicket
+    followTicket,
+    getRequestedByUser
 };

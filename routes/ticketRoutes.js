@@ -8,7 +8,11 @@ router.post('/create', jwtValidation.requireAuthStandard, crudCtrl.ticketCreate)
 
 router.get('/', jwtValidation.requireAuthStandard, crudCtrl.ticketGetAll);
 
-router.get('/', jwtValidation.requireAuthStandard, crudCtrl.getRequestedByUser);
+router.get('/counts', jwtValidation.requireAuthStandard, crudCtrl.ticketCountForViews);
+
+router.get('/search', jwtValidation.requireAuthStandard, crudCtrl.ticketSearch);
+
+router.get('/user-requested', jwtValidation.requireAuthStandard, crudCtrl.getRequestedByUser);
 
 router.get('/:id', jwtValidation.requireAuthStandard, crudCtrl.ticketGetById);
 
