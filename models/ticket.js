@@ -16,20 +16,21 @@ const ticketSchema = new Schema({
     },
 
     description: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Comment',
         required: true
     },
 
     ticketType: {
         type: String,
         required: true,
-        default: 'Default'
     },
 
     status: {
         type: String,
         required: true,
-        enum: validStatus
+        enum: validStatus,
+        default: 'Open'
     },
     
     createdBy: {

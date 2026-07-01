@@ -15,9 +15,9 @@ const departmentSchema = new Schema({
             name: {type: String, required: true},
             expectedType: {type: String, required: true},
             dataSource: {type: String, required: false},
-            required: {type: Boolean, enum: [true, false], required: true}
+            required: {type: Boolean, required: true}
         }],
-    }],
+}],
 
     config: {
         assignmentStrategy: {

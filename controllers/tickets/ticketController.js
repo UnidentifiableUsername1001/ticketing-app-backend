@@ -16,7 +16,6 @@ const ticketCreate = async (req, res) => {
             title: req.body.title,
             description: req.body.description,
             ticketType: req.body.ticketType,
-            status: req.body.status,
             createdBy: req.user.id,
             departmentId: req.body.departmentId,
             assignedTo: ticketAssignment,
@@ -25,7 +24,7 @@ const ticketCreate = async (req, res) => {
 
         await newTicket.save();
 
-        return res.status(201).json({message: `Ticket #${newTicket._id} created!`})
+        return res.status(201).json({message: `Ticket #${newTicket.ticketNumber} created!`, id: newTicket._id})
     } catch (e) {
         console.error('Error processing: ', e);
         return res.status(500).json({error: e, message: "Internal server error"});
