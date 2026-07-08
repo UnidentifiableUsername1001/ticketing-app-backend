@@ -4,6 +4,33 @@ const counter = require('./counter');
 
 const validStatus = ["Open", "In progress", "Closed"];
 
+const descriptionSchema = new Schema({
+    postedBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+
+    bodyText: {
+        type: String,
+        required: true
+    },
+    mentions: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }],
+    attachments: [
+        {
+            fileName: {type: String, required: true},
+            fileUrl: {type: String, required: true},
+            fileType: { type: String },
+            uploadedAt: { type: Date, default: Date.now }
+        }
+    ]
+}, {timestamps: true});
+
+const description = mongoose.model('Description', descriptionSchema);
+
 const ticketSchema = new Schema({
     ticketNumber: {
         type: Number,
@@ -15,11 +42,7 @@ const ticketSchema = new Schema({
         required: true,
     },
 
-    description: {
-        type: Schema.Types.ObjectId,
-        ref: 'Comment',
-        required: true
-    },
+    description: descriptionSchema,
 
     ticketType: {
         type: String,
@@ -87,4 +110,7 @@ ticketSchema.pre('save', async function (next) {
 });
 
 const ticket = mongoose.model('Ticket', ticketSchema);
-module.exports = ticket;
+module.exports = {
+    ticket,
+    description
+};
