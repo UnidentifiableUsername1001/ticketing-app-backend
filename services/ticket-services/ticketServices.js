@@ -3,7 +3,7 @@ const department = require('../../models/department');
 const ticket = require('../../models/ticket');
 const mongoose = require('mongoose');
 
-const ticketAssignment = async (deptId) => {
+async function ticketAssignment (deptId) {
     try {
 
         const dept = await department.findOne({_id: deptId});

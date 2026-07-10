@@ -6,23 +6,35 @@ const ticketSchemas = require('../../models/ticket');
 const ticket = ticketSchemas.ticket;
 const description = ticketSchemas.description;
 const user = require('../../models/user');
-const ticketServices = require('../../services/ticket-services/ticketServices');
+const { ticketAssignment } = require('../../services/ticket-services/ticketServices');
 const comments = require('../../models/comments');
 
 const ticketCreate = async (req, res) => {
     try {
+
+        console.log(req.body);
+
         const custAttributes = req.body.customAttributes ? req.body.customAttributes.map(({key, value}) => ({key: key, value: value})) : [];
-        const ticketAssignment = ticketServices(req.body.departmentId);
+
+        const assignedUser = await ticketAssignment(req.body.departmentId);
+
+        const mappedFollowers = req.body.description.mentions.map((mention) => ({_id: mention}));
 
         const newTicket = new ticket({
             title: req.body.title,
-            description: req.body.description,
+            description: {
+                ...req.body.description,
+                postedBy: req.user.id
+            },
             ticketType: req.body.ticketType,
             createdBy: req.user.id,
             departmentId: req.body.departmentId,
-            assignedTo: ticketAssignment,
-            customAttributes: custAttributes
+            assignedTo: assignedUser,
+            customAttributes: custAttributes,
+            followers: [...mappedFollowers]
         });
+
+        console.log(newTicket);
 
         await newTicket.save();
 

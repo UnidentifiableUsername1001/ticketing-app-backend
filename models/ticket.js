@@ -16,8 +16,7 @@ const descriptionSchema = new Schema({
         required: true
     },
     mentions: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+        type: String
     }],
     attachments: [
         {
@@ -91,21 +90,20 @@ const ticketSchema = new Schema({
 
 ticketSchema.index({departmentId: 1, status: 1, ticketType: 1, assignedTo: 1,});
 
-ticketSchema.pre('save', async function (next) {
+ticketSchema.pre('validate', async function () {
     if (!this.isNew) {
-        return next();
+        return;
     }
     try {
         const ticketCounter = await counter.findOneAndUpdate(
             {modelName: 'Ticket'},
             {$inc: {sequenceValue: 1} },
-            {new: true, upsert: true}
+            {returnDocument: "after", upsert: true}
         );
         
         this.ticketNumber = ticketCounter.sequenceValue;
-        next();
     } catch (e) {
-        next(e);
+        throw e;
     }
 });
 
