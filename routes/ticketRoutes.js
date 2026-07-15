@@ -14,6 +14,8 @@ router.get('/search', jwtValidation.requireAuthStandard, crudCtrl.ticketSearch);
 
 router.get('/user-requested', jwtValidation.requireAuthStandard, crudCtrl.getRequestedByUser);
 
+router.get('/presigned-url', jwtValidation.requireAuthStandard, getUploadUrl);
+
 router.get('/:id', jwtValidation.requireAuthStandard, crudCtrl.ticketGetById);
 
 router.get('/:id/comments', jwtValidation.requireAuthStandard, crudCtrl.getComments);
@@ -23,7 +25,5 @@ router.put('/:id/update', jwtValidation.requireAuthStandard, crudCtrl.ticketUpda
 router.post('/:id/comment', jwtValidation.requireAuthStandard, crudCtrl.addTicketComment);
 
 router.get('/:id/follow', jwtValidation.requireAuthStandard, crudCtrl.followTicket);
-
-router.get('/presigned-url', jwtValidation.requireAuthStandard, getUploadUrl);
 
 module.exports = router;

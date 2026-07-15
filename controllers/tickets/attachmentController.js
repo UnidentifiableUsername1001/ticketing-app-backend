@@ -42,8 +42,8 @@ const getUploadUrl = async (req, res) => {
             fileType: fileType
         });
     } catch (e) {
-        logger.error('Error generating presigned URL', e);
-        return res.status(500).json({ message: "Internal server error", details: error.message });
+        console.log(e);
+        return res.status(500).json({ message: `Internal server error! Details: ${e}`});
     }
 };
 

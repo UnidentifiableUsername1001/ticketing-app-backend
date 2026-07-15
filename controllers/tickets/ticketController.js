@@ -12,8 +12,6 @@ const comments = require('../../models/comments');
 const ticketCreate = async (req, res) => {
     try {
 
-        console.log(req.body);
-
         const custAttributes = req.body.customAttributes ? req.body.customAttributes.map(({key, value}) => ({key: key, value: value})) : [];
 
         const assignedUser = await ticketAssignment(req.body.departmentId);
@@ -33,8 +31,6 @@ const ticketCreate = async (req, res) => {
             customAttributes: custAttributes,
             followers: [...mappedFollowers]
         });
-
-        console.log(newTicket);
 
         await newTicket.save();
 
