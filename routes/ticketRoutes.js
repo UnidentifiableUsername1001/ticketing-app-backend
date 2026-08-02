@@ -18,11 +18,11 @@ router.get('/presigned-url', jwtValidation.requireAuthStandard, getUploadUrl);
 
 router.get('/:id', jwtValidation.requireAuthStandard, crudCtrl.ticketGetById);
 
-router.get('/:id/comments', jwtValidation.requireAuthStandard, crudCtrl.getComments);
+router.get('/:id/get-comments', jwtValidation.requireAuthStandard, crudCtrl.getComments);
 
 router.put('/:id/update', jwtValidation.requireAuthStandard, crudCtrl.ticketUpdateMeta);
 
-router.post('/:id/comment', jwtValidation.requireAuthStandard, crudCtrl.addTicketComment);
+router.post('/:id/add-comment', jwtValidation.requireAuthStandard, crudCtrl.addTicketComment);
 
 router.get('/:id/follow', jwtValidation.requireAuthStandard, crudCtrl.followTicket);
 

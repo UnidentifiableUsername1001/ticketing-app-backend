@@ -5,12 +5,6 @@ const counter = require('./counter');
 const validStatus = ["Open", "In progress", "Closed"];
 
 const descriptionSchema = new Schema({
-    postedBy: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-
     bodyText: {
         type: String,
         required: true
