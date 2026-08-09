@@ -208,6 +208,7 @@ const ticketGetById = async (req, res) => {
         const foundTicket = await ticket.findById(id)
             .populate({path: 'createdBy', select: '-jobTitle -password'})
             .populate({path: 'assignedTo', select: '-jobTitle -password'})
+            .populate({path: 'followers', select: 'firstName lastName'})
             .exec();
 
         if (!foundTicket) return res.status(404).json({message: `Ticket with ID ${id} not found`});
@@ -236,6 +237,14 @@ const ticketUpdateMeta = async (req, res) => {
 
         if (status) ticketToUpdate.status = status;
         if (assignedUser) ticketToUpdate.assignedTo = assignedUser;
+
+        if (follower) {
+            follower.forEach((person) => {
+                if (!ticketToUpdate.followers.includes(person)) {
+                    ticketToUpdate.followers.push(person)
+                }
+            })
+        };
 
         await ticketToUpdate.save();
 
