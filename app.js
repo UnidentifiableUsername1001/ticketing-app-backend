@@ -1,13 +1,18 @@
 require('dotenv').config();
-const express = require('express');
 const cors = require('cors');
 const portfinder = require("portfinder");
 const connectToDataBase = require('./config/db')
-const app = express();
 const authRoutes = require('./routes/authRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
 const userRoutes = require('./routes/userRoutes');
 const departmentRoutes = require('./routes/departmentRoutes');
+const express = require('express');
+const app = express();
+
+app.use((req, res, next) => {
+    console.log(`[SPY] Incoming Request: ${req.method} ${req.url}`);
+    next();
+});
 
 app.use(cors({
     origin: 'https://musical-space-zebra-5g9rpqwq79rwh7649-8080.app.github.dev',
