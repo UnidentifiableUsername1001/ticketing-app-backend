@@ -9,7 +9,11 @@ const ticketRoutes = require('./routes/ticketRoutes');
 const userRoutes = require('./routes/userRoutes');
 const departmentRoutes = require('./routes/departmentRoutes');
 
-app.use(cors());
+app.use(cors({
+    origin: 'https://musical-space-zebra-5g9rpqwq79rwh7649-8080.app.github.dev',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+}));
 portfinder.basePort = process.env.PORT || 3000;
 
 // connect to MongoDB
