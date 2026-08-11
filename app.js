@@ -9,13 +9,8 @@ const departmentRoutes = require('./routes/departmentRoutes');
 const express = require('express');
 const app = express();
 
-app.use((req, res, next) => {
-    console.log(`[SPY] Incoming Request: ${req.method} ${req.url}`);
-    next();
-});
-
 app.use(cors({
-    origin: 'https://musical-space-zebra-5g9rpqwq79rwh7649-8080.app.github.dev',
+    origin: 'https://wisetickets.co.uk',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
