@@ -24,6 +24,9 @@
     "portfinder": "^1.0.38"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.19"
+    "@eslint/js": "^10.0.1",
+    "@types/cors": "^2.8.19",
+    "eslint": "^10.8.1",
+    "globals": "^17.11.0"
   }
 }

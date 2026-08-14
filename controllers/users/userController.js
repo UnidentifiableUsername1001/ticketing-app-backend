@@ -1,6 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const {body, validationResult} = require('express-validator');
+const {validationResult} = require('express-validator');
 const router = express.Router();
 const dotenv = require('dotenv'); dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const ticket = require('../../models/ticket');
 const user = require('../../models/user');
 const department = require('../../models/department');
+const bcrypt = require('bcryptjs');
 
 const userGetAll = async (req, res) => {
         try {

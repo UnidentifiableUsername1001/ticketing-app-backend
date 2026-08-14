@@ -97,7 +97,7 @@ ticketSchema.pre('validate', async function () {
         
         this.ticketNumber = ticketCounter.sequenceValue;
     } catch (e) {
-        throw e;
+        console.log(e);
     }
 });
 
