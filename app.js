@@ -10,7 +10,10 @@ const express = require('express');
 const app = express();
 
 app.use(cors({
-    origin: 'https://wisetickets.co.uk',
+    origin: [
+        'https://wisetickets.co.uk',
+        'http://localhost:5173'
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
 }));
