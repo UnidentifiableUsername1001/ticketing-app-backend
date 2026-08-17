@@ -21,36 +21,42 @@ const loginController = async (req, res) => {
 
         if (!theUser) return res.status(404).json({message: "User not found"});
 
-            const passwordResult = await bcrypt.compare(req.body.password, theUser.password);
+        const passwordResult = await bcrypt.compare(req.body.password, theUser.password);
 
-            if (!passwordResult) {
-                logger.error('Passwords do not match');
-                return res.status(400).json({ error: 'Incorrect details, please try again.' });
-            }
+        if (!passwordResult) {
+            logger.error('Passwords do not match');
+            return res.status(400).json({ error: 'Incorrect details, please try again.' });
+        }
 
-            if (theUser.passwordResetRequired) {
-                let payload = {
-                    user: {
-                        id: theUser._id.toString(),
-                        scope: 'password_reset_only'
-                    }
-                };
-                const tempAuthToken = jwt.sign(payload, JWT_SECRET, {expiresIn: '10m'});
-                return res.status(200).json({message: "Password reset required", authToken: tempAuthToken});
-            }
-
+        if (theUser.passwordResetRequired || req.body.voluntaryReset === true) {
             let payload = {
                 user: {
                     id: theUser._id.toString(),
-                    role: theUser.role,
-                    department: theUser.departmentId,
-                    scope: 'user_scope'
-                },
+                    scope: 'password_reset_only'
+                }
             };
+            const tempAuthToken = jwt.sign(payload, JWT_SECRET, {expiresIn: '10m'});
+            return res.status(200).json({message: "Password reset required", authToken: tempAuthToken});
+        }
 
-            const authToken = jwt.sign(payload, JWT_SECRET, {expiresIn: '1h'});
-            logger.info('User logged in successfully');
-            return res.status(200).json({authToken: authToken, firstName: theUser.firstName, lastName: theUser.lastName, email: email, message: "User logged in!"});
+        let payload = {
+            user: {
+                id: theUser._id.toString(),
+                role: theUser.role,
+                department: theUser.departmentId,
+                scope: 'user_scope'
+            },
+        };
+
+        const authToken = jwt.sign(payload, JWT_SECRET, {expiresIn: '1h'});
+        logger.info('User logged in successfully');
+        return res.status(200).json({
+            authToken: authToken, 
+            firstName: theUser.firstName, 
+            lastName: theUser.lastName, 
+            email: email, 
+            message: "User logged in!"
+        });
     } catch (e) {
         logger.error(e);
         return res.status(500).json({message: 'Internal server error', details: e.message});
@@ -58,6 +64,7 @@ const loginController = async (req, res) => {
 };
 
 const passwordReset = async (req, res) => {
+
     const result = validationResult(req);
     if (!result.isEmpty()) {
         logger.error('Validation errors in request', result.array());
@@ -65,18 +72,22 @@ const passwordReset = async (req, res) => {
     }
 
     try {
-        const theUser = await user.findById(req.user.id);
+        const theUser = await user.findOne({email: req.body.email});
+
+        console.log(theUser);
 
         if (!theUser) return res.status(404).json({message: "User not found"});
 
         const oldPassword = await bcrypt.compare(req.body.oldPassword, theUser.password);
-        if (!oldPassword) return res.status(400).json({messaged: "Incorrect existing password"});
+
+        if (!oldPassword) return res.status(400).json({messaged: "Old password incorrect"});
 
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(req.body.newPassword, salt);
 
         theUser.password = hash;
         theUser.passwordResetRequired = false;
+
         await theUser.save();
 
         let payload = {

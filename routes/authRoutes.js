@@ -20,6 +20,6 @@ const passwordResetValidationRiles = [checkNewPassword];
 // Login route 
 router.post('/login', profileValidationRules, authController.loginController);
 
-router.post('/password-reset', passwordResetValidationRiles, jwtValidation.reqAuthPassReset, authController.passwordReset);
+router.put('/password-reset', passwordResetValidationRiles, jwtValidation.reqAuthPassReset, authController.passwordReset);
 
 module.exports = router;
