@@ -1,18 +1,19 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
+import express from 'express';
+import dotenv from 'dotenv'; dotenv.config();
+import { requireAuthStandard } from '../middleware/auth';
+import { userGetAll, createUser, updateUser, getUserById } from '../controllers/users/userController';
+import { verifyRole } from '../middleware/rbac';
+
 const router = express.Router();
-const dotenv = require('dotenv'); dotenv.config();
-const JWT_SECRET = process.env.JWT_SECRET;
-const jwtValidation = require('../middleware/auth');
-const userCrudCtrl = require('../controllers/users/userController');
-const { verifyRole } = require('../middleware/rbac');
 
-router.get('/', jwtValidation.requireAuthStandard, userCrudCtrl.userGetAll);
+router.get('/', requireAuthStandard, userGetAll);
 
-router.get('/:id', jwtValidation.requireAuthStandard, userCrudCtrl.getUserById);
+router.get('/:id', requireAuthStandard, getUserById);
 
-router.post('/new-user', jwtValidation.requireAuthStandard, verifyRole(['Admin']));
+router.post('/new-user', requireAuthStandard, verifyRole(['Admin']), createUser);
 
-router.put('/update-user/:userId', jwtValidation.requireAuthStandard, verifyRole(['Admin', 'Manager']));
+router.put('/update-user/:userId', requireAuthStandard, verifyRole(['Admin', 'Manager']), updateUser);
 
-module.exports = router;
+export {
+    router
+};

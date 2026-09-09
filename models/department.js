@@ -1,7 +1,15 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const { Schema, SchemaTypes, model } = mongoose;
+import { auditPlugin } from '../mongoPlugins/plugins';
 
 const departmentSchema = new Schema({
+
+    companyId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Company',
+        required: true
+    },
+
     name: {
         type: String,
         required: true,
@@ -28,5 +36,10 @@ const departmentSchema = new Schema({
     }
 }, { timestamps: true });
 
+departmentSchema.plugin(auditPlugin);
+
 const department = mongoose.model('Department', departmentSchema);
-module.exports = department;
+
+export {
+    department
+};

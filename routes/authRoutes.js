@@ -1,8 +1,9 @@
-const express = require('express');
-const { body, validationResult } = require('express-validator');
+import express from 'express';
+import { body } from 'express-validator';
+import { loginController, passwordReset } from '../controllers/auth/authController';
+import { reqAuthPassReset } from '../middleware/auth';
+
 const router = express.Router();
-const authController = require('../controllers/auth/authController');
-const jwtValidation = require('../middleware/auth');
 
 const checkEmail = body('email').isEmail().escape();
 const checkPassword = body('password')
@@ -18,8 +19,10 @@ const profileValidationRules = [checkEmail, checkPassword];
 const passwordResetValidationRiles = [checkNewPassword];
 
 // Login route 
-router.post('/login', profileValidationRules, authController.loginController);
+router.post('/login', profileValidationRules, loginController);
 
-router.put('/password-reset', passwordResetValidationRiles, jwtValidation.reqAuthPassReset, authController.passwordReset);
+router.put('/password-reset', passwordResetValidationRiles, reqAuthPassReset, passwordReset);
 
-module.exports = router;
+export {
+    router
+};

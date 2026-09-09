@@ -1,13 +1,8 @@
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv'); dotenv.config();
-const JWT_SECRET = process.env.JWT_SECRET;
-const mongoose = require('mongoose');
-const ticketSchemas = require('../../models/ticket');
-const ticket = ticketSchemas.ticket;
-const description = ticketSchemas.description;
-const user = require('../../models/user');
-const { ticketAssignment } = require('../../services/ticket-services/ticketServices');
-const comments = require('../../models/comments');
+import mongoose from 'mongoose';
+import { ticket, description } from '../../models/ticket';
+import { user } from '../../models/user';
+import { ticketAssignment } from '../../services/ticket-services/ticketServices';
+import { comments } from '../../models/comments';
 
 const ticketCreate = async (req, res) => {
     try {
@@ -356,7 +351,7 @@ const getComments = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     ticketCreate,
     ticketGetAll,
     ticketGetById,

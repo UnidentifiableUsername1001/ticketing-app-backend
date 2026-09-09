@@ -12,4 +12,4 @@ const verifyRole = allowedRoles => {
     };
 };
 
-module.exports = { verifyRole };
+export { verifyRole };

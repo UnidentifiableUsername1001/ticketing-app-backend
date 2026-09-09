@@ -1,5 +1,6 @@
-const mongoose = require('mongoose')
+import mongoose from 'mongoose';
 const { Schema, SchemaTypes, model } = mongoose;
+import { auditPlugin } from '../mongoPlugins/plugins';
 
 const validPermissions = ["Admin", "Manager", "User"];
 
@@ -36,6 +37,12 @@ const userSchema = new Schema ({
         default: true,
     },
 
+    companyId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Company',
+        required: true
+    },
+
     departmentId: {
         type: Schema.Types.ObjectId,
         ref: 'Department',
@@ -52,8 +59,12 @@ const userSchema = new Schema ({
     timestamps: true
 });
 
-userSchema.index({departmentId: 1, role: 1, jobTitle: 1});
+userSchema.index({companyId: 1, departmentId: 1, role: 1, jobTitle: 1});
+
+userSchema.plugin(auditPlugin);
 
 const user = mongoose.model('User', userSchema);
 
-module.exports = user;
+export {
+    user
+}

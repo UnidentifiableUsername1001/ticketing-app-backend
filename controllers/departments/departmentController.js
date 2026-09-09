@@ -1,7 +1,4 @@
-const mongoose = require('mongoose');
-const ticket = require('../../models/ticket');
-const user = require('../../models/user');
-const department = require('../../models/department');
+import { department } from '../../models/department';
 
 const createDepartment = async (req, res) => {
     try {

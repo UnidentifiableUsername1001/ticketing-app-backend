@@ -1,15 +1,19 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
-require("node:dns/promises").setServers(["1.1.1.1", "8.8.8.8"]);
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import dns from 'node:dns';
 
-let url = `${process.env.MONGO_URL}`;
+dns.setServers(["1.1.1.1", "8.8.8.8"])
+dotenv.config();
 
 async function connectToDataBase() {
 
+    const url = process.env.MONGO_URL
     const client = await mongoose.connect(`${url}`);
 
     return client;
 
 }
 
-module.exports = connectToDataBase;
+export {
+    connectToDataBase
+};

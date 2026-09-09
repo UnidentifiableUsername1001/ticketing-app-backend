@@ -1,12 +1,15 @@
-require('dotenv').config();
-const cors = require('cors');
-const portfinder = require("portfinder");
-const connectToDataBase = require('./config/db')
-const authRoutes = require('./routes/authRoutes');
-const ticketRoutes = require('./routes/ticketRoutes');
-const userRoutes = require('./routes/userRoutes');
-const departmentRoutes = require('./routes/departmentRoutes');
-const express = require('express');
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import portfinder from 'portfinder';
+import { connectToDataBase } from './config/db.js';
+import { router as authRoutes } from './routes/authRoutes.js';
+import { router as ticketRoutes } from './routes/ticketRoutes.js';
+import { router as userRoutes } from './routes/userRoutes.js';
+import { router as departmentRoutes } from './routes/departmentRoutes.js';
+import { router as companyRoutes } from './routes/companyRoutes.js';
+
+dotenv.config();
 const app = express();
 
 app.use(cors({
@@ -34,6 +37,8 @@ app.use('/api/ticket', ticketRoutes);
 app.use('/api/users', userRoutes);
 
 app.use('/api/department', departmentRoutes);
+
+app.use('/api/new', companyRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

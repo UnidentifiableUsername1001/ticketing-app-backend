@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const { Schema, SchemaTypes, model } = mongoose;
-const counter = require('./counter');
+import { counter } from '../models/counter';
+import { auditPlugin } from '../mongoPlugins/plugins';
 
 const validStatus = ["Open", "In progress", "Closed"];
 
@@ -22,7 +23,7 @@ const descriptionSchema = new Schema({
     ]
 }, {timestamps: true});
 
-const description = mongoose.model('Description', descriptionSchema);
+
 
 const ticketSchema = new Schema({
     ticketNumber: {
@@ -61,6 +62,12 @@ const ticketSchema = new Schema({
         required: false,
     },
 
+    companyId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Company',
+        required: true
+    },
+
     departmentId: {
         type: Schema.Types.ObjectId,
         ref: 'Department',
@@ -82,7 +89,9 @@ const ticketSchema = new Schema({
     timestamps: true
 });
 
-ticketSchema.index({departmentId: 1, status: 1, ticketType: 1, assignedTo: 1,});
+ticketSchema.index({companyId: 1, departmentId: 1, status: 1, ticketType: 1, assignedTo: 1,});
+
+ticketSchema.plugin(auditPlugin);
 
 ticketSchema.pre('validate', async function () {
     if (!this.isNew) {
@@ -90,7 +99,10 @@ ticketSchema.pre('validate', async function () {
     }
     try {
         const ticketCounter = await counter.findOneAndUpdate(
-            {modelName: 'Ticket'},
+            {
+                modelName: 'Ticket',
+                companyId: this.companyId
+            },
             {$inc: {sequenceValue: 1} },
             {returnDocument: "after", upsert: true}
         );
@@ -101,8 +113,10 @@ ticketSchema.pre('validate', async function () {
     }
 });
 
+const description = mongoose.model('Description', descriptionSchema);
 const ticket = mongoose.model('Ticket', ticketSchema);
-module.exports = {
+
+export {
     ticket,
     description
 };

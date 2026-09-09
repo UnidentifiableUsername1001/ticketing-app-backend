@@ -1,12 +1,13 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { validationResult } = require('express-validator');
-const dotenv = require('dotenv'); dotenv.config();
-const JWT_SECRET = process.env.JWT_SECRET;
-const pino = require('pino');
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { validationResult } from 'express-validator';
+import dotenv from 'dotenv';
+dotenv.config();
+import pino from 'pino';
+import { user } from '../../models/user';
+
 const logger = pino();
-const mongoose = require('mongoose');
-const user = require('../../models/user');
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const loginController = async (req, res) => {
 
@@ -108,7 +109,7 @@ const passwordReset = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     loginController,
     passwordReset,
 }

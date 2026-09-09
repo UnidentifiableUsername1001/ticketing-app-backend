@@ -1,7 +1,6 @@
-const user = require('../../models/user');
-const department = require('../../models/department');
-const ticket = require('../../models/ticket');
-const mongoose = require('mongoose');
+import { user } from '../../models/user';
+import { department } from '../../models/department';
+import { ticket } from '../../models/ticket';
 
 async function ticketAssignment (deptId) {
     try {
@@ -35,6 +34,6 @@ async function ticketAssignment (deptId) {
     }
 };
 
-module.exports = {
+export {
     ticketAssignment
 };

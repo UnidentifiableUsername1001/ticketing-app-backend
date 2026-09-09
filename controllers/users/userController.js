@@ -1,14 +1,8 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const {validationResult} = require('express-validator');
-const router = express.Router();
-const dotenv = require('dotenv'); dotenv.config();
-const JWT_SECRET = process.env.JWT_SECRET;
-const mongoose = require('mongoose');
-const ticket = require('../../models/ticket');
-const user = require('../../models/user');
-const department = require('../../models/department');
-const bcrypt = require('bcryptjs');
+import { validationResult } from 'express-validator';
+import { ticket } from '../../models/ticket';
+import { user } from '../../models/user';
+import { department } from '../../models/department';
+import bcrypt from 'bcryptjs';
 
 const userGetAll = async (req, res) => {
         try {
@@ -117,7 +111,7 @@ const updateUser = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     userGetAll,
     createUser,
     updateUser,

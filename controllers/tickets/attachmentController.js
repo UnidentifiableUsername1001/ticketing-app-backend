@@ -1,8 +1,9 @@
-const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
-const pino = require('pino');
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import pino from 'pino';
+import dotenv from 'dotenv';
+dotenv.config();
 const logger = pino();
-const dotenv = require('dotenv');
 
 
 const s3 = new S3Client({
@@ -47,4 +48,4 @@ const getUploadUrl = async (req, res) => {
     }
 };
 
-module.exports = { getUploadUrl };
+export { getUploadUrl };

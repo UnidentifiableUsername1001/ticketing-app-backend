@@ -1,7 +1,9 @@
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-const JWT_SECRET = process.env.JWT_SECRET;
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
 dotenv.config();
+const JWT_SECRET = process.env.JWT_SECRET;
+
 
 const requireAuthStandard = (req, res, next) => {
     const token = req.header('Authorization');
@@ -55,7 +57,7 @@ const reqAuthPassReset = (req, res, next) => {
     }
 }
 
-module.exports = {
+export {
     requireAuthStandard,
     reqAuthPassReset
 };

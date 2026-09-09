@@ -1,7 +1,15 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const { Schema, SchemaTypes, model } = mongoose;
+import { auditPlugin } from '../mongoPlugins/plugins';
 
 const commentSchema = new Schema({
+
+    companyId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Company',
+        required: true
+    },
+
     ticketId: {
         type: Schema.Types.ObjectId,
         ref: 'Ticket',
@@ -35,5 +43,10 @@ const commentSchema = new Schema({
 
 commentSchema.index({ticketId: 1, postedBy: 1});
 
+commentSchema.plugin(auditPlugin);
+
 const comments = mongoose.model('Comment', commentSchema);
-module.exports = comments;
+
+export {
+    comments
+}
