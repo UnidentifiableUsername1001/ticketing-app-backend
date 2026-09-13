@@ -1,12 +1,12 @@
 import express from 'express';
-import { requireAuthStandard } from '../middleware/auth';
-import { verifyRole } from '../middleware/rbac';
+import { requireAuthStandard } from '../middleware/auth.js';
+import { verifyRole } from '../middleware/rbac.js';
 import {
     getAllDepartments,
     getDeptById,
     createDepartment,
     editDepartment
-} from '../controllers/departments/departmentController';
+} from '../controllers/departments/departmentController.js';
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
-import { user } from '../../models/user';
-import { department } from '../../models/department';
-import { ticket } from '../../models/ticket';
+import { user } from '../../models/user.js';
+import { department } from '../../models/department.js';
+import { ticket } from '../../models/ticket.js';
 
 async function ticketAssignment (deptId) {
     try {

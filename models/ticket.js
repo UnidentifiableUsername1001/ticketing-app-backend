@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 const { Schema, SchemaTypes, model } = mongoose;
-import { counter } from '../models/counter';
-import { auditPlugin } from '../mongoPlugins/plugins';
+import { counter } from '../models/counter.js';
+import { auditPlugin } from '../mongoPlugins/plugins.js';
 
 const validStatus = ["Open", "In progress", "Closed"];
 

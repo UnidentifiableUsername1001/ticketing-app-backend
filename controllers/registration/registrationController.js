@@ -1,4 +1,4 @@
-import { company } from '../../models/company';
+import { company } from '../../models/company.js';
 
 const companyRegistration = async (req, res) => {
     try {
@@ -18,7 +18,7 @@ const companyRegistration = async (req, res) => {
             companyAddress: companyAddress
         });
 
-        const savedCompany = await newCompany.save().setOptions({skipTenant: true});
+        const savedCompany = await newCompany.save();
 
         return res.status(200).json({message: 'Company registered', companyDocument: savedCompany});
     } catch (e) {

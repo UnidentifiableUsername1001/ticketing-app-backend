@@ -4,7 +4,7 @@ import { validationResult } from 'express-validator';
 import dotenv from 'dotenv';
 dotenv.config();
 import pino from 'pino';
-import { user } from '../../models/user';
+import { user } from '../../models/user.js';
 
 const logger = pino();
 const JWT_SECRET = process.env.JWT_SECRET;

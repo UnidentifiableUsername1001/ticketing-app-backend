@@ -1,7 +1,7 @@
 import express from 'express';
 import { body } from 'express-validator';
-import { loginController, passwordReset } from '../controllers/auth/authController';
-import { reqAuthPassReset } from '../middleware/auth';
+import { loginController, passwordReset } from '../controllers/auth/authController.js';
+import { reqAuthPassReset } from '../middleware/auth.js';
 
 const router = express.Router();
 

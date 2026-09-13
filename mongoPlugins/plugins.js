@@ -1,4 +1,4 @@
-import { tenantStorage } from '../context/tenantStorage';
+import { tenantStorage } from '../context/tenantStorage.js';
 
 function auditPlugin(schema) {
 
@@ -15,40 +15,40 @@ function auditPlugin(schema) {
         'countDocuments',
     ]
 
-    schema.pre('save', function(next) {
-        if (this.getOptions().skipTenant) return next();
+    schema.pre('save', function() {
+        if (this.getOptions().skipTenant) return;
 
         const localStore = tenantStorage.getStore();
 
-        if (!localStore || !localStore.companyId) return next(new Error('Tenant context missing'));
+        if (!localStore || !localStore.companyId) return new Error('Tenant context missing');
 
         this.companyId = localStore.companyId;
-        next();
+        return;
     });
 
-    schema.pre('aggregate', function(next) {
-        if (this.getOptions().skipTenant) return next();
+    schema.pre('aggregate', function() {
+        if (this.getOptions().skipTenant) return;
 
         const localStore = tenantStorage.getStore();
 
-        if (!localStore || !localStore.companyId) return next(new Error('Tenant context missing'));
+        if (!localStore || !localStore.companyId) return new Error('Tenant context missing');
         
         this.pipeline().unshift({ $match: { companyId: localStore.companyId }});
-        next();
+        return;
     });
 
     
     operations.forEach(op => {
-        schema.pre(op, function(next) {
+        schema.pre(op, function() {
             const reqQuery = this.getFilter();
             const localStore = tenantStorage.getStore();
 
-            if (this.getOptions().skipTenant) return next();
-            if (!localStore || !localStore.companyId) return next(new Error('Tenant context missing'));
+            if (this.getOptions().skipTenant) return;
+            if (!localStore || !localStore.companyId) return new Error('Tenant context missing');
 
             this.setQuery({...reqQuery, companyId: localStore.companyId});
 
-            next();
+            return;
         });
     });
 };

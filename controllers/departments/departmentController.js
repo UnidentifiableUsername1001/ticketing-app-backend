@@ -1,4 +1,4 @@
-import { department } from '../../models/department';
+import { department } from '../../models/department.js';
 
 const createDepartment = async (req, res) => {
     try {
@@ -157,7 +157,7 @@ const deleteTicketType = async (req, res) => {
     }
 };
 
-module.exports = {
+export {
     createDepartment,
     editDepartment,
     deleteTicketType,

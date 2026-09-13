@@ -1,7 +1,7 @@
 import { validationResult } from 'express-validator';
-import { ticket } from '../../models/ticket';
-import { user } from '../../models/user';
-import { department } from '../../models/department';
+import { ticket } from '../../models/ticket.js';
+import { user } from '../../models/user.js';
+import { department } from '../../models/department.js';
 import bcrypt from 'bcryptjs';
 
 const userGetAll = async (req, res) => {

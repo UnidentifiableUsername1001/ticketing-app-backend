@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import { ticket, description } from '../../models/ticket';
-import { user } from '../../models/user';
-import { ticketAssignment } from '../../services/ticket-services/ticketServices';
-import { comments } from '../../models/comments';
+import { ticket, description } from '../../models/ticket.js';
+import { user } from '../../models/user.js';
+import { ticketAssignment } from '../../services/ticket-services/ticketServices.js';
+import { comments } from '../../models/comments.js';
 
 const ticketCreate = async (req, res) => {
     try {

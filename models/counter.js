@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 const { Schema, SchemaTypes, model } = mongoose;
-import { auditPlugin } from '../mongoPlugins/plugins';
+import { auditPlugin } from '../mongoPlugins/plugins.js';
 
 const newCounter = new Schema({
 

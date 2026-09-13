@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv'; dotenv.config();
-import { requireAuthStandard } from '../middleware/auth';
+import { requireAuthStandard } from '../middleware/auth.js';
 import { 
     ticketCountForViews, 
     ticketCreate, 
@@ -12,8 +12,8 @@ import {
     addTicketComment,
     ticketUpdateMeta,
     followTicket  
-} from '../controllers/tickets/ticketController';
-import { getUploadUrl } from '../controllers/tickets/attachmentController';
+} from '../controllers/tickets/ticketController.js';
+import { getUploadUrl } from '../controllers/tickets/attachmentController.js';
 
 const router = express.Router();
 

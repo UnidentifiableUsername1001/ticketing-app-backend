@@ -38,7 +38,7 @@ app.use('/api/users', userRoutes);
 
 app.use('/api/department', departmentRoutes);
 
-app.use('/api/new', companyRoutes);
+app.use('/api/company', companyRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
