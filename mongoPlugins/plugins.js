@@ -27,7 +27,7 @@ function auditPlugin(schema) {
     });
 
     schema.pre('aggregate', function() {
-        if (this.getOptions().skipTenant) return;
+        if (this.option().skipTenant) return;
 
         const localStore = tenantStorage.getStore();
 
