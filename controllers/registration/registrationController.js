@@ -57,7 +57,7 @@ const companyRegistration = async (req, res) => {
                         return mappingError = {status: 400, message: `'${key}' was left blank.`}
                     case typeof value.value === 'number' && value.value <= 0:
                         return mappingError = {status: 400, message: `'${key}' cannot be less than or equal to 0`}
-                    case key === 'email':
+                    // case key === 'email':
                         // Will add this later, but intended to 
                         // run email validation function and return error res if not passed
                     default:
