@@ -6,7 +6,8 @@ const companySchema = new Schema({
 
     companyName: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
 
     numberOfEmployees: {

@@ -1,0 +1,4 @@
+transctionResult resolved to:
+Duplicate company: { status: 409, message: 'Company Already Registered' }
+I tried to test a new company but I'm getting a typeError 'this.getOptions is not a function' in my mongo plugins file
+Regarding duplicate emails, at registration I don't mind this, 1 email could feasibly be associated with more than 1 business. Imagine an IT services company that handles system administration at more than 1 business. Regarding indexes, I've implemented this at the schema level

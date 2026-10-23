@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import pino from 'pino';
 import { user } from '../../models/user.js';
+import { company } from "../../models/company.js";
 
 const logger = pino();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -18,7 +19,7 @@ const loginController = async (req, res) => {
 
     } try {
         const email = req.body.email;
-        const theUser = await user.findOne({email: email});
+        const theUser = await user.findOne({email: email}).setOptions({skipTenant: true});
 
         if (!theUser) return res.status(404).json({message: "User not found"});
 
@@ -44,6 +45,7 @@ const loginController = async (req, res) => {
             user: {
                 id: theUser._id.toString(),
                 role: theUser.role,
+                companyId: theUser.companyId,
                 department: theUser.departmentId,
                 scope: 'user_scope'
             },
@@ -73,9 +75,7 @@ const passwordReset = async (req, res) => {
     }
 
     try {
-        const theUser = await user.findOne({email: req.body.email});
-
-        console.log(theUser);
+        const theUser = await user.findOne({email: req.body.email}).setOptions({skipTenant: true});
 
         if (!theUser) return res.status(404).json({message: "User not found"});
 
@@ -95,13 +95,14 @@ const passwordReset = async (req, res) => {
             user: {
                 id: theUser._id.toString(),
                 role: theUser.role,
+                companyId: theUser.companyId.toString(),
                 department: theUser.departmentId,
                 scope: 'user_scope'
             }
         };
 
         const authToken = jwt.sign(payload, JWT_SECRET, {expiresIn: '1h'});
-        return res.status(200).json({authToken: authToken, firstName: theUser.firstName, email: theUser.email, message: "User logged in!"});
+        return res.status(200).json({authToken: authToken, message: "User logged in!"});
 
     } catch (e) {
         console.log(e)

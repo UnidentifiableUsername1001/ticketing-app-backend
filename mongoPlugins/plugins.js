@@ -15,25 +15,28 @@ function auditPlugin(schema) {
         'countDocuments',
     ]
 
-    schema.pre('save', function() {
-        if (this.getOptions().skipTenant) return;
+    schema.pre('save', function(options) {
+        if (options?.skipTenant) return;
 
         const localStore = tenantStorage.getStore();
 
-        if (!localStore || !localStore.companyId) return new Error('Tenant context missing');
+        if (!localStore) {
+            throw new Error('Tenant context missing');
+        };
 
-        this.companyId = localStore.companyId;
+        this.companyId = localStore
         return;
     });
 
     schema.pre('aggregate', function() {
-        if (this.option().skipTenant) return;
+
+        if (this.options?.skipTenant) return;
 
         const localStore = tenantStorage.getStore();
 
-        if (!localStore || !localStore.companyId) return new Error('Tenant context missing');
+        if (!localStore) throw new Error('Tenant context missing');
         
-        this.pipeline().unshift({ $match: { companyId: localStore.companyId }});
+        this.pipeline().unshift({ $match: { companyId: localStore }});
         return;
     });
 
@@ -44,9 +47,9 @@ function auditPlugin(schema) {
             const localStore = tenantStorage.getStore();
 
             if (this.getOptions().skipTenant) return;
-            if (!localStore || !localStore.companyId) return new Error('Tenant context missing');
+            if (!localStore) throw new Error('Tenant context missing');
 
-            this.setQuery({...reqQuery, companyId: localStore.companyId});
+            this.setQuery({...reqQuery, companyId: localStore});
 
             return;
         });

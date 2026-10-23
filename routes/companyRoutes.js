@@ -4,7 +4,7 @@ import { companyRegistration } from '../controllers/registration/registrationCon
 
 const router = express.Router();
 
-router.post('/new-company', requireAuthStandard, companyRegistration);
+router.post('/new-company', companyRegistration);
 
 export {
     router
