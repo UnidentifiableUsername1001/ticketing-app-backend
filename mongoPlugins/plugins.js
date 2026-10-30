@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { tenantStorage } from '../context/tenantStorage.js';
 
 function auditPlugin(schema) {
@@ -30,13 +31,20 @@ function auditPlugin(schema) {
 
     schema.pre('aggregate', function() {
 
+        console.log("pre.aggregate log: ",JSON.stringify(this))
+
         if (this.options?.skipTenant) return;
 
         const localStore = tenantStorage.getStore();
 
         if (!localStore) throw new Error('Tenant context missing');
+
+        const companyObjectId = mongoose.Types.ObjectId.isValid(localStore)
+            ? new mongoose.Types.ObjectId(localStore)
+            : localStore;
         
-        this.pipeline().unshift({ $match: { companyId: localStore }});
+        this.pipeline().unshift({ $match: { companyId: companyObjectId } });
+
         return;
     });
 

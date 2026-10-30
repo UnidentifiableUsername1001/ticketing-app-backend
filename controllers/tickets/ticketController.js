@@ -131,6 +131,7 @@ const ticketCountForViews = async (req, res) => {
 
         const teamConditional = req.user.role === 'Admin' ? [{
                 $match: {
+                    companyId: new mongoose.Types.ObjectId(req.user.companyId),
                     status: {$ne: 'Closed'}
                 }},
                 {
@@ -138,6 +139,7 @@ const ticketCountForViews = async (req, res) => {
                 }
         ] : [{
             $match: {
+                companyId: new mongoose.Types.ObjectId(req.user.companyId),
                 departmentId: new mongoose.Types.ObjectId(req.user.departmentId),
                 status: {$ne: 'Closed'}
             }},
@@ -148,6 +150,7 @@ const ticketCountForViews = async (req, res) => {
 
         const closedConditional = req.user.role === 'Admin' ? [{
                 $match: {
+                    companyId: new mongoose.Types.ObjectId(req.user.companyId),
                     status: {$eq: 'Closed'}
                 }},
                 {
@@ -155,6 +158,7 @@ const ticketCountForViews = async (req, res) => {
                 }
         ] : [{
             $match: {
+                companyId: new mongoose.Types.ObjectId(req.user.companyId),
                 departmentId: new mongoose.Types.ObjectId(req.user.departmentId),
                 status: {$eq: 'Closed'}
             }},
@@ -168,6 +172,7 @@ const ticketCountForViews = async (req, res) => {
             team: teamConditional,
             assigned: [{
                 $match: {
+                    companyId: new mongoose.Types.ObjectId(req.user.companyId),
                     assignedTo: new mongoose.Types.ObjectId(req.user.id),
                     status: {$ne: 'Closed'}
                 }
@@ -178,6 +183,7 @@ const ticketCountForViews = async (req, res) => {
             }],
             raisedByUser: [{
                 $match: {
+                    companyId: new mongoose.Types.ObjectId(req.user.companyId),
                     createdBy: new mongoose.Types.ObjectId(req.user.id),
                     status: {$ne: 'Closed'}
                 }
@@ -186,7 +192,9 @@ const ticketCountForViews = async (req, res) => {
                 $count: 'ticketCount'
             }],
             closed: closedConditional
-        }).exec();
+        }).option({skipTenant: true}).exec();
+
+        console.log("Result: ", JSON.stringify(counts))
 
         return res.status(200).json({message: 'Ticket counts calculated', ticketCounts: counts})
 
