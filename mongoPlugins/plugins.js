@@ -31,8 +31,6 @@ function auditPlugin(schema) {
 
     schema.pre('aggregate', function() {
 
-        console.log("pre.aggregate log: ",JSON.stringify(this))
-
         if (this.options?.skipTenant) return;
 
         const localStore = tenantStorage.getStore();

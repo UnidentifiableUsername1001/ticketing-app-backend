@@ -39,10 +39,14 @@ const ticketCreate = async (req, res) => {
 
 const ticketGetAll = async (req, res) => {
     try {
-        let query = {
-            status: { $ne: 'Closed' }
-        };
-        if (req.user.role !== 'Admin') {
+
+        let query = {};
+
+        if (!req.query.search) {
+            query.status = { $ne: 'Closed'}
+        }
+
+        if (req.user.role !== 'Admin' && !req.query.search) {
             query.departmentId = req.user.department;
         };
 
@@ -50,6 +54,7 @@ const ticketGetAll = async (req, res) => {
             .populate({path: 'createdBy', select: '-jobTitle -password'})
             .populate({path: 'assignedTo', select: '-jobTitle -password'})
             .populate({path: 'departmentId', select: 'name _id'})
+            .populate({path: 'followers', select: '-jobTitle -password'})
             .exec();
 
             return res.status(200).json({message: "Tickets loaded", ticketArray: ticketArray});  
@@ -79,6 +84,8 @@ const getRequestedByUser = async (req, res) => {
 
 const ticketSearch = async (req, res) => {
     try {
+
+        console.log(req.query);
         let query = {};
         const { page = 1, limit = 10} = req.query;
         const reqObjKey = Object.keys(req.query);
@@ -194,8 +201,6 @@ const ticketCountForViews = async (req, res) => {
             closed: closedConditional
         }).option({skipTenant: true}).exec();
 
-        console.log("Result: ", JSON.stringify(counts))
-
         return res.status(200).json({message: 'Ticket counts calculated', ticketCounts: counts})
 
     } catch (e) {
@@ -212,6 +217,7 @@ const ticketGetById = async (req, res) => {
             .populate({path: 'createdBy', select: '-jobTitle -password'})
             .populate({path: 'assignedTo', select: '-jobTitle -password'})
             .populate({path: 'followers', select: 'firstName lastName'})
+            .populate({path: 'departmentId', select: 'name _id'})
             .exec();
 
         if (!foundTicket) return res.status(404).json({message: `Ticket with ID ${id} not found`});
@@ -229,10 +235,20 @@ const ticketUpdateMeta = async (req, res) => {
         try {
 
         const id = req.params.id;
-        const ticketToUpdate = await ticket.findById(id);
+        const ticketToUpdate = await ticket.findById(id).populate({path: 'followers', select: '_id'});
+
+        const userId = new mongoose.Types.ObjectId(req.user.id);
+
+        let following;
+
+        for (const follower of ticketToUpdate.followers) {
+            if (Object.values(follower).includes(userId)) return following = true;
+
+            return following = false
+        };
 
         if (!ticketToUpdate) return res.status(404).json({message: 'Ticket not found'});
-        if (req.user.department !== ticketToUpdate.departmentId && req.user.role !== 'Admin') {
+        if (req.user.department !== ticketToUpdate.departmentId && req.user.role !== 'Admin' && !following) {
             return res.status(403).json({message: "You don't have permission to edit this ticket"})
         }
         
