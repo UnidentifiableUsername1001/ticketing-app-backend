@@ -22,6 +22,7 @@ const departmentSchema = new Schema({
         fields: [{
             name: {type: String, required: true},
             expectedType: {type: String, required: true},
+            toolTipText: {type: String, required: false},
             dataSource: {type: String, required: false},
             required: {type: Boolean, required: true}
         }],

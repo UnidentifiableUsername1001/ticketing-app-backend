@@ -47,6 +47,8 @@ const reqAuthPassReset = (req, res, next) => {
     try {
         
         const decoded = jwt.verify(splitToken, JWT_SECRET);
+
+        console.log(decoded)
         
 
         if (decoded.user.scope !== 'password_reset_only'){
