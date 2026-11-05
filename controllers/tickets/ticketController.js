@@ -320,9 +320,11 @@ const addTicketComment = async (req, res) => {
         };
 
         if (Array.isArray(mentions) && mentions.length !==0) {
-            const sanitisedMentions = mentions.map(mention => (
-                mention._id
-            ));
+            const sanitisedMentions = mentions.map(mention => {
+                if(mongoose.isObjectIdOrHexString(mention)) {
+                    return mention
+                };
+            });
 
             mentions = sanitisedMentions;
 
@@ -336,6 +338,7 @@ const addTicketComment = async (req, res) => {
             return res.status(400).json({message: "1 or more mentioned users don't exist in the database"});
 
         const commentPayload = {
+            companyId: req.user.companyId,
             ticketId: id,
             postedBy: postedBy,
             bodyText: bodyText,
