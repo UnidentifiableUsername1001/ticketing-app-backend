@@ -6,7 +6,9 @@ import bcrypt from 'bcryptjs';
 
 const userGetAll = async (req, res) => {
         try {
-        const userArray = await user.find({}).select('-password').exec();
+        const userArray = await user.find({}).select('-password')
+        .populate({path: 'departmentId', select: 'name'})
+        .exec();
         return res.status(200).json({userArray: userArray});
     } catch (e) {
         console.log('Error: ' + e);
