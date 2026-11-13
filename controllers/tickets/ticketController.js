@@ -236,6 +236,7 @@ const ticketUpdateMeta = async (req, res) => {
 
         const id = req.params.id;
         const ticketToUpdate = await ticket.findById(id).populate({path: 'followers', select: '_id'});
+        if (!ticketToUpdate) return res.status(404).json({message: 'Ticket not found'});
 
         const userId = new mongoose.Types.ObjectId(req.user.id);
 
@@ -247,15 +248,14 @@ const ticketUpdateMeta = async (req, res) => {
             return following = false
         };
 
-        if (!ticketToUpdate) return res.status(404).json({message: 'Ticket not found'});
-        if (req.user.department !== ticketToUpdate.departmentId && req.user.role !== 'Admin' && !following) {
-            return res.status(403).json({message: "You don't have permission to edit this ticket"})
-        }
+        const { status, assignedTo, followers } = req.body;
         
-        const { status, assignedUser, follower } = req.body;
-
-        if (status) ticketToUpdate.status = status;
-        if (assignedUser) ticketToUpdate.assignedTo = assignedUser;
+        if (req.user.department === ticketToUpdate.departmentId || req.user.role === 'Admin') {
+            if (status) ticketToUpdate.status = status;
+            if (assignedTo) ticketToUpdate.assignedTo = assignedTo;
+        } else {
+            return res.status(403).json({message: "You don't have permission to edit these fields"})
+        }
 
         if (follower) {
             follower.forEach((person) => {
@@ -349,7 +349,7 @@ const addTicketComment = async (req, res) => {
         const newComment = new comments(commentPayload);
         await newComment.save();
 
-        return res.status(201).json({message: "Comment added"});
+        return res.status(201).json({message: "Comment added", comment: newComment});
 
     } catch (e) {
         console.log(e);

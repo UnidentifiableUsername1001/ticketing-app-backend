@@ -31,7 +31,6 @@ const getUserById = async (req, res) => {
 
 const createUser = async (req, res) => {
     try {
-
         const result = validationResult(req);
         if (!result.isEmpty()) {
             console.log('Validation errors in request', result.array());
@@ -60,7 +59,8 @@ const createUser = async (req, res) => {
             email: email,
             password: hash,
             departmentId: departmentId, 
-            role: role
+            role: role,
+            companyId: req.user.companyId,
         });
 
         await newUser.save();

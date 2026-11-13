@@ -49,7 +49,7 @@ const createDepartment = async (req, res) => {
 
 const getAllDepartments = async (req, res) => {
     try {
-        const deptArray = await department.find({}).select('-ticketTypes -config').exec();
+        const deptArray = await department.find({}).exec();
         return res.status(200).json({departments: deptArray});
     } catch (e) {
         console.log(e);

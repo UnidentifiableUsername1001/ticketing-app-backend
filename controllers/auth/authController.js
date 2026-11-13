@@ -12,8 +12,11 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 const loginController = async (req, res) => {
 
+    
+
     const result = validationResult(req);
     if (!result.isEmpty()) {
+        
         logger.error('Validation errors in request', result.array());
             return res.status(400).json({error: result.array()});
 
