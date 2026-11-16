@@ -257,8 +257,8 @@ const ticketUpdateMeta = async (req, res) => {
             return res.status(403).json({message: "You don't have permission to edit these fields"})
         }
 
-        if (follower) {
-            follower.forEach((person) => {
+        if (followers) {
+            followers.forEach((person) => {
                 if (!ticketToUpdate.followers.includes(person)) {
                     ticketToUpdate.followers.push(person)
                 }
