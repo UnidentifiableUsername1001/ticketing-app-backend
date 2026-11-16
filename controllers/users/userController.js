@@ -1,5 +1,4 @@
 import { validationResult } from 'express-validator';
-import { ticket } from '../../models/ticket.js';
 import { user } from '../../models/user.js';
 import { department } from '../../models/department.js';
 import bcrypt from 'bcryptjs';
@@ -7,7 +6,7 @@ import bcrypt from 'bcryptjs';
 const userGetAll = async (req, res) => {
         try {
         const userArray = await user.find({}).select('-password')
-        .populate({path: 'departmentId', select: 'name'})
+        .populate({path: 'departmentId', select: '_id name'})
         .exec();
         return res.status(200).json({userArray: userArray});
     } catch (e) {
@@ -73,14 +72,14 @@ const createUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     try {
-        const userId = req.params.id;
+        const userId = req.params.userId
         const userToUpdate = await user.findOne({_id: userId});
 
         if (!userToUpdate) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: `User "${userId}" not found`});
         }
 
-        if (req.user.role !== 'Admin' && req.user.department !== userToUpdate.departmentId) {
+        if (req.user.role !== 'Admin' && req.user.role !== 'Manager') {
             return res.status(403).json({message: "Not authorised to update users outside your department"});
         }
 
@@ -113,9 +112,25 @@ const updateUser = async (req, res) => {
     }
 };
 
+const deleteUser = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        
+        const deleted = await user.deleteOne({ _id: userId});
+
+        if(deleted.deletedCount < 1) return res.status(404).json({message: "User not found"});
+
+        return res.status(200).json({message: "User deleted!"});
+    } catch (e) {
+        console.log(e);
+        return res.status(500).json({message: 'Internal Server Error'});
+    }
+};
+
 export {
     userGetAll,
     createUser,
     updateUser,
-    getUserById
+    getUserById,
+    deleteUser
 }

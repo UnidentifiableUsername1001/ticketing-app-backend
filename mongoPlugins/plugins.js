@@ -14,14 +14,15 @@ function auditPlugin(schema) {
         'updateOne', 
         'deleteOne',
         'countDocuments',
-    ]
+    ];
 
-    schema.pre('save', function(options) {
-        if (options?.skipTenant) return;
+    schema.pre('validate', function() {
+        if(this?.$locals?.skipTenant) return;
+        if(this.companyId) return;
 
         const localStore = tenantStorage.getStore();
 
-        if (!localStore) {
+        if(!localStore) {
             throw new Error('Tenant context missing');
         };
 

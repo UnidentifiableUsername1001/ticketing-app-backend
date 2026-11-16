@@ -11,9 +11,6 @@ const logger = pino();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const loginController = async (req, res) => {
-
-    
-
     const result = validationResult(req);
     if (!result.isEmpty()) {
         
