@@ -299,7 +299,9 @@ const addTicketComment = async (req, res) => {
     try {
         const id = req.params.id;
 
-        const targetTicket = await ticket.findById(id);
+        const targetTicket = await ticket.findById(id)
+        .populate({path: "followers", select: "_id"});
+
         if (!targetTicket)
             return res.status(404).json({message: "Ticket not found"});
 
@@ -328,14 +330,21 @@ const addTicketComment = async (req, res) => {
 
             mentions = sanitisedMentions;
 
+            const count = await user.countDocuments({_id: { $in: mentions } });
+
+            if(mentions.length !== count && mentions.length !== 0) 
+                return res.status(400).json({message: "1 or more mentioned users don't exist. Please refresh the page and re-tag users."});
+
+            mentions.forEach((person) => {
+                const id = new mongoose.Types.ObjectId(person);
+                if(!targetTicket.followers.includes(id)) {
+                    targetTicket.followers.push(id);    
+                }
+            })
+
         } else {
             mentions = [];
         };
-
-        const count = await user.countDocuments({_id: { $in: mentions } });
-
-        if(mentions.length !== count && mentions.length !== 0) 
-            return res.status(400).json({message: "1 or more mentioned users don't exist in the database"});
 
         const commentPayload = {
             companyId: req.user.companyId,
@@ -347,6 +356,7 @@ const addTicketComment = async (req, res) => {
         };
 
         const newComment = new comments(commentPayload);
+        await targetTicket.save();
         await newComment.save();
 
         return res.status(201).json({message: "Comment added", comment: newComment});
